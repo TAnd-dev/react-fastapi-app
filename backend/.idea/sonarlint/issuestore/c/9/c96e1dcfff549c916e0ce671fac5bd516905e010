@@ -1,0 +1,17 @@
+
+epython:S1192ğ2"LDefine a constant instead of duplicating this literal "Select[Any]" 3 times.(«ëìÿ
+Mpython:S1066®%"/Merge this if statement with the enclosing one.(¸˜Œÿıÿÿÿÿ
+mpython:S3776ö
+"TRefactor this function to reduce its Cognitive Complexity from 46 to the 15 allowed.(Å¹”Ë
+spython:S2638á"UChange this method signature to accept the same arguments as the method it overrides.(Üˆüşÿÿÿÿ
+spython:S2638‡"UChange this method signature to accept the same arguments as the method it overrides.(Üˆüşÿÿÿÿ
+rpython:S3776«"TRefactor this function to reduce its Cognitive Complexity from 78 to the 15 allowed.(êóÈöûÿÿÿÿ
+rpython:S1186£"YAdd a nested comment explaining why this method is empty, or complete the implementation.(·ş“‡
+wpython:S1186¶"YAdd a nested comment explaining why this method is empty, or complete the implementation.(‚ÏñÙùÿÿÿÿ
+rpython:S1186¹"YAdd a nested comment explaining why this method is empty, or complete the implementation.(·ş“‡
+<python:S125ì"Remove this commented out code.(Š÷ŸÀşÿÿÿÿ
+Mpython:S1135‘!"4Complete the task associated to this "TODO" comment.(´ØÍí
+rpython:S3776Á#"TRefactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.(¼¿ù÷ÿÿÿÿÿ
+mpython:S3776§%"TRefactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.(öğß—
+Hpython:S1172€3"/Remove the unused function parameter "against".(¿í‰
+Mpython:S1135é3"4Complete the task associated to this "TODO" comment.(¿ŠÕª

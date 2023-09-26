@@ -1,0 +1,8 @@
+
+Mpython:S1172Û"/Remove the unused function parameter "dialect".(ã ÉÂþÿÿÿÿ
+<python:S125Ì"Remove this commented out code.(‡“Þøÿÿÿÿ
+Rpython:S1135‡"4Complete the task associated to this "TODO" comment.(±”ˆÂøÿÿÿÿ
+ypython:S117š"\Rename this local variable "DBAPIBinary" to match the regular expression ^[_a-z][a-z0-9_]*$.(ÈËºâþÿÿÿÿ
+‡python:S101ž"jRename class "DOUBLE_PRECISION" to match the regular expression ^_?([A-Z_][a-zA-Z0-9]*|[a-z_][a-z0-9_]*)$.(¤“Æúÿÿÿÿ
+mpython:S3776Å"TRefactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.(ÛçÑö
+mpython:S3776ç"TRefactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.(î½´Ç
