@@ -3,9 +3,9 @@ from datetime import datetime
 from fastapi import Request, Depends
 from jose import JWTError, jwt
 
-from backend.app.config import settings
-from backend.app.exceptions import TokenExpiredException, TokenAbsentException, IncorrectTokenException, UserIsNotPresent
-from backend.app.users.services import UserService
+from app.config import settings
+from app.exceptions import TokenExpiredException, TokenAbsentException, IncorrectTokenException, UserIsNotPresent
+from app.users.services import UserService
 
 
 def get_token(request: Request):

@@ -7,11 +7,14 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from backend.app.database import Base, DATABASE_URL
+from app.database import Base, DATABASE_URL
 
-from backend.app.common.models import Images
-from backend.app.shop.models import Categories, Items
-from backend.app.users.models import Users, Profiles
+from app.common.models import Images
+from app.shop.models import Categories, Items, Reviews
+from app.users.models import Users, Profiles
+from app.card.models import Cards
+from app.favorite.models import Favorites
+from app.purchase.models import Purchases
 
 sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 

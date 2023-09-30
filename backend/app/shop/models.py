@@ -3,8 +3,8 @@ import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Table, CheckConstraint
 from sqlalchemy.orm import relationship
 
-from backend.app.database import Base
-from backend.app.common.models import Images
+from app.database import Base
+from app.common.models import Images
 
 item_image = Table('item_image', Base.metadata,
                    Column('item_id', Integer, ForeignKey('items.id'), nullable=False),
@@ -50,4 +50,3 @@ class Reviews(Base):
     item_id = Column(ForeignKey('items.id'), nullable=False)
     rate = Column(Integer, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow())
-

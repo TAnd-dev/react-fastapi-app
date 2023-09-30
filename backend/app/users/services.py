@@ -1,9 +1,12 @@
 from sqlalchemy import insert, select, update
 
-from backend.app.common.models import Images
-from backend.app.database import async_session_maker
-from backend.app.services.base_services import BaseService
-from backend.app.users.models import Users, Profiles
+from app.card.models import Cards
+from app.common.models import Images
+from app.database import async_session_maker
+from app.favorite.models import Favorites
+from app.purchase.models import Purchases
+from app.services.base_services import BaseService
+from app.users.models import Users, Profiles
 
 
 class UserService(BaseService):
@@ -13,8 +16,13 @@ class UserService(BaseService):
     async def add(cls, **values):
         user_id = await super().add(**values)
         async with async_session_maker() as session:
-            query = insert(Profiles).values(user=user_id)
+            query = insert(Profiles).values(id=user_id, user=user_id)
             await session.execute(query)
+
+            for model in (Cards, Favorites, Purchases):
+                query = insert(model).values(id=user_id, profile_id=user_id)
+                await session.execute(query)
+
             await session.commit()
             return user_id
 

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, EmailStr
 
 
@@ -13,12 +15,12 @@ class SUserReg(BaseModel):
 
 
 class SBriefUserProfile(BaseModel):
-    name: str
-    second_name: str
-    number_phone: int
+    name: Optional[str]
+    second_name: Optional[str]
+    number_phone: Optional[int]
 
 
 class SUserProfile(SBriefUserProfile):
     id: int
     email: EmailStr
-    photo: str
+    photo: Optional[str]

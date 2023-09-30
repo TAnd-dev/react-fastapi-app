@@ -2,10 +2,10 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends
 
-from backend.app.shop.schemas import SItems, SortItems, SAddReview, SCategories, SBriefItems, SReview, SBriefReview
-from backend.app.shop.services import ShopService, CategoryService, ReviewService
-from backend.app.users.dependecies import current_user
-from backend.app.users.models import Users
+from app.shop.schemas import SItems, SortItems, SAddReview, SCategories, SBriefItems, SReview, SBriefReview
+from app.shop.services import ShopService, CategoryService, ReviewService
+from app.users.dependecies import current_user
+from app.users.models import Users
 
 router = APIRouter(
     prefix='/shop',

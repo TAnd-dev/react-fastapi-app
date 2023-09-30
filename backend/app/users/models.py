@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, BigInteger
 from sqlalchemy.orm import relationship
 
-from backend.app.database import Base
+from app.database import Base
 
 
 class Users(Base):
@@ -23,3 +23,7 @@ class Profiles(Base):
     second_name = Column(String)
     number_phone = Column(BigInteger)
     photo = Column(ForeignKey('images.id'), default=8)
+
+    card = relationship('Cards', back_populates='profile')
+    purchases = relationship('Purchases', back_populates='profile')
+    favorites = relationship('Favorites', back_populates='profile')

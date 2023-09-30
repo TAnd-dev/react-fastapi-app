@@ -1,10 +1,10 @@
 from sqlalchemy import select, and_, insert, func, ChunkedIteratorResult
 from sqlalchemy.orm import selectinload
 
-from backend.app.database import async_session_maker
-from backend.app.services.base_services import BaseService
-from backend.app.shop.models import Items, Reviews, Categories, item_category
-from backend.app.users.models import Users
+from app.database import async_session_maker
+from app.services.base_services import BaseService
+from app.shop.models import Items, Reviews, Categories, item_category
+from app.users.models import Users
 
 
 class ShopService(BaseService):

@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Response, Depends
 
-from backend.app.exceptions import UserAlreadyExistsException, IncorrectPasswordOrEmailException, PasswordMissmatchException
-from backend.app.users.auth import get_password_hash, authenticate_user, create_access_token
-from backend.app.users.dependecies import current_user
-from backend.app.users.models import Users
-from backend.app.users.schemas import SUserAuth, SUserReg, SBriefUserProfile, SUserProfile
-from backend.app.users.services import UserService
+from app.exceptions import UserAlreadyExistsException, IncorrectPasswordOrEmailException, PasswordMissmatchException
+from app.users.auth import get_password_hash, authenticate_user, create_access_token
+from app.users.dependecies import current_user
+from app.users.models import Users
+from app.users.schemas import SUserAuth, SUserReg, SBriefUserProfile, SUserProfile
+from app.users.services import UserService
 
 router = APIRouter(prefix='/user', tags=['User', 'Auth'])
 

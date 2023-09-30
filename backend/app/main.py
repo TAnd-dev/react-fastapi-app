@@ -2,12 +2,18 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
-from backend.app.users.router import router as user_router
-from backend.app.shop.router import router as shop_router
+from app.users.router import router as user_router
+from app.shop.router import router as shop_router
+from app.card.router import router as card_router
+from app.favorite.router import router as favorite_router
+from app.purchase.router import router as purchase_router
 
 app = FastAPI()
 app.include_router(user_router)
 app.include_router(shop_router)
+app.include_router(card_router)
+app.include_router(favorite_router)
+app.include_router(purchase_router)
 
 origins = [
     'http://localhost:3000',
