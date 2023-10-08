@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useCookies } from 'react-cookie';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,7 +16,7 @@ import {
     ArrowIcon,
     SearchIcon,
     CompareIcon,
-    CardIcon,
+    CartIcon,
     LoginIcon,
     FavoritIcon,
 } from '../../comps/Icons.jsx';
@@ -146,9 +146,13 @@ function HeaderSearch() {
 }
 
 function HeaderNav() {
+    const [isVisibleUserLinks, setIsVisibleUserLinks] = useState(false);
+    const dropdownRef = useRef(null);
     const [cookies, setCookies, removeCookies] = useCookies();
     const userData = useSelector(state => state.userData.userData);
     const dispatch = useDispatch();
+
+    const { ContainerLogin, BlackOrangeLink } = css;
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -164,9 +168,10 @@ function HeaderNav() {
                 if (response.ok) {
                     const data = await response.json();
                     dispatch(changeUserData(data));
+                } else {
+                    dispatch(changeUserData({}));
                 }
             } catch (error) {
-                // console.log(error);
                 dispatch(changeUserData({}));
                 removeCookies('auth_token');
             }
@@ -176,22 +181,47 @@ function HeaderNav() {
         }
     }, [cookies]);
 
+    useEffect(() => {
+        const handleOutsideClick = () => {
+            if (dropdownRef.current) {
+                setIsVisibleUserLinks(false);
+            }
+        };
+        document.addEventListener('click', handleOutsideClick);
+
+        return () => {
+            document.removeEventListener('click', handleOutsideClick);
+        };
+    }, []);
+
+    async function clickLogout() {
+        await fetch('http://localhost:8000/user/logout', {
+            method: 'POST',
+            credentials: 'include',
+            header: {
+                'Content-Type': 'application/json',
+            },
+        });
+        dispatch(changeUserData({}));
+    }
+    console.log(isVisibleUserLinks);
     return (
-        <div>
-            <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+            <HeaderNavBtn
+                link="/favorite"
+                linkText="Favorite"
+                icon={<FavoritIcon />}
+            />
+            <HeaderNavBtn link="/cart" linkText="Cart" icon={<CartIcon />} />
+            <div
+                onMouseOver={() =>
+                    userData.email
+                        ? setIsVisibleUserLinks(true)
+                        : setIsVisibleUserLinks(false)
+                }
+            >
                 <HeaderNavBtn
-                    link="#"
-                    linkText="Compare"
-                    icon={<CompareIcon />}
-                />
-                <HeaderNavBtn
-                    link="#"
-                    linkText="Favorit"
-                    icon={<FavoritIcon />}
-                />
-                <HeaderNavBtn link="#" linkText="Card" icon={<CardIcon />} />
-                <HeaderNavBtn
-                    link={userData.email ? '/user/profile' : '/login'}
+                    link={userData.email ? null : '/login'}
                     linkText={
                         userData.email
                             ? `${userData.email.slice(0, 7)}...`
@@ -199,6 +229,26 @@ function HeaderNav() {
                     }
                     icon={<LoginIcon />}
                 />
+                {userData.email && isVisibleUserLinks && (
+                    <ContainerLogin ref={dropdownRef}>
+                        <span>
+                            <Link to={`/user/profile`} relative="path">
+                                <BlackOrangeLink>Profile</BlackOrangeLink>
+                            </Link>
+                        </span>
+                        <span>
+                            <Link to={`/purchase`} relative="path">
+                                <BlackOrangeLink>Purchase</BlackOrangeLink>
+                            </Link>
+                        </span>
+                        <span
+                            style={{ color: 'red', cursor: 'pointer' }}
+                            onClick={clickLogout}
+                        >
+                            Logout
+                        </span>
+                    </ContainerLogin>
+                )}
             </div>
         </div>
     );
@@ -207,12 +257,19 @@ function HeaderNav() {
 function HeaderNavBtn({ link, linkText, icon }) {
     return (
         <NavBtn>
-            <Link to={link}>
+            {link ? (
+                <Link to={link}>
+                    <HeaderBtnLink>
+                        <span>{icon}</span>
+                        <span>{linkText}</span>
+                    </HeaderBtnLink>
+                </Link>
+            ) : (
                 <HeaderBtnLink>
                     <span>{icon}</span>
                     <span>{linkText}</span>
                 </HeaderBtnLink>
-            </Link>
+            )}
         </NavBtn>
     );
 }

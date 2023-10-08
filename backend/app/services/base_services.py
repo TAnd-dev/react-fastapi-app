@@ -38,9 +38,23 @@ class BaseService:
             return result_id.scalars().one_or_none()
 
 
-class BaseCardPurchaseFavoriteService:
+class BaseCartPurchaseFavoriteService:
     model = None
     associated_table = None
+
+    @classmethod
+    async def find_item_model(cls, user_id, item_id):
+        async with async_session_maker() as session:
+            query = select(
+                cls.associated_table
+            ).where(
+                and_(
+                    cls.associated_table.c.related_id == user_id,
+                    cls.associated_table.c.item_id == item_id
+                )
+            )
+            result = await session.execute(query)
+            return result.scalars().one_or_none()
 
     @classmethod
     async def find_model_by_user_id(cls, user_id):

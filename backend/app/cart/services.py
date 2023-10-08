@@ -1,13 +1,19 @@
 from sqlalchemy import update, and_
 
-from app.card.models import Cards, card_item
+from app.cart.models import Carts, cart_item
 from app.database import async_session_maker
-from app.services.base_services import BaseCardPurchaseFavoriteService
+from app.services.base_services import BaseCartPurchaseFavoriteService
 
 
-class CardService(BaseCardPurchaseFavoriteService):
-    model = Cards
-    associated_table = card_item
+class CartService(BaseCartPurchaseFavoriteService):
+    model = Carts
+    associated_table = cart_item
+
+    @classmethod
+    async def add_item(cls, **values):
+        item = await cls.find_item_model(values['related_id'], values['item_id'])
+        if not item:
+            await super().add_item(**values)
 
     @classmethod
     async def set_count_items(cls, user_id, item_id, **values):

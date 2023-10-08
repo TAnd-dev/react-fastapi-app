@@ -2,7 +2,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends
 
-from app.purchase.schemas import SPurchase
+from app.purchase.schemas import SPurchase, SAddPurchase
 from app.purchase.services import PurchaseService
 from app.users.dependecies import current_user
 from app.users.models import Users
@@ -19,8 +19,11 @@ async def get_purchase(user: Users = Depends(current_user)) -> list[SPurchase]:
 
 
 @router.post('/add_item')
-async def add_item_to_purchase(item_id: int, count: int = 1, user: Users = Depends(current_user)):
-    await PurchaseService.add_item(related_id=user.id, item_id=item_id, count=count)
+async def add_item_to_purchase(purchase_details: SAddPurchase, user: Users = Depends(current_user)):
+    await PurchaseService.add_item(related_id=user.id, item_id=purchase_details.item_id, count=purchase_details.count,
+                                   price=purchase_details.price, email=purchase_details.email,
+                                   name=purchase_details.name, second_name=purchase_details.second_name,
+                                   phone_number=purchase_details.phone_number)
 
 
 @router.delete('/remove_item')

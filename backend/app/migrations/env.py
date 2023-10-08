@@ -12,7 +12,7 @@ from app.database import Base, DATABASE_URL
 from app.common.models import Images
 from app.shop.models import Categories, Items, Reviews
 from app.users.models import Users, Profiles
-from app.card.models import Cards
+from app.cart.models import Carts
 from app.favorite.models import Favorites
 from app.purchase.models import Purchases
 

@@ -15,6 +15,7 @@ const css = {
         display: flex;
         justify-content: space-around;
         align-items: center;
+        height: 80px;
     `,
     HeaderLogo: styled.div`
         display: flex;
@@ -73,7 +74,7 @@ const css = {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: 535px;
+        width: 35%;
         background-color: #f0efef;
         border-radius: 8px;
         cursor: text;
@@ -116,16 +117,29 @@ const css = {
             color: rgba(0, 0, 0, 0.6);
         }
     `,
+    ContainerLogin: styled.div`
+        position: absolute;
+        top: 70px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin-top: 10px;
+        padding: 10px 15px;
+        background-color: white;
+        border: 1px solid rgb(207, 207, 207);
+        border-radius: 10px;
+    `,
     SearchResult: styled.div`
         position: fixed;
         top: 90px;
         display: flex;
         flex-direction: column;
-        width: 535px;
+        width: 35%;
         background-color: #f0efef;
         padding: 10px;
         border-radius: 5px;
-        margin-right: 70px;
+        margin-left: 10px;
     `,
 
     Footer: {
@@ -173,16 +187,19 @@ const css = {
             border-radius: 5px;
         `,
         ItemListDetailCenter: styled.div`
-            width: 65%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            width: 65%;
+            padding: 10px 0;
         `,
         ItemListDetailRight: styled.div`
             display: flex;
             flex-wrap: wrap;
             justify-content: space-evenly;
+            align-content: space-between;
             width: 15%;
+            padding: 10px 0;
             text-align: center;
         `,
     },
@@ -222,13 +239,6 @@ const css = {
             padding: 15px;
             border-radius: 15px;
         `,
-        ItemSubDetailsHeader: styled.div`
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            font-size: 40px;
-            font-weight: bold;
-        `,
         ItemRating: styled.div`
             display: flex;
             justify-content: center;
@@ -242,34 +252,11 @@ const css = {
             padding-left: 15px;
             margin-bottom: 10px;
         `,
-        ItemAddReviewContainer: styled.div`
-            &:before {
-                content: '';
-                position: fixed;
-                top: 0;
-                left: 0;
-                height: 100vh;
-                width: 100vw;
-                background: #000;
-                opacity: 0.5;
-                z-index: 3;
-            }
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            height: 100vh;
-            width: 100vw;
-            z-index: 4;
-        `,
     },
     Categories: {
         CategoryContainer: styled.div`
             position: fixed;
-            top: 75px;
+            top: 90px;
             left: 10px;
             display: flex;
             background-color: white;
@@ -277,7 +264,7 @@ const css = {
             min-width: 200px;
             border: 1px solid rgb(216, 216, 216);
             border-radius: 10px;
-            padding: 10px;
+            padding: 20px 10px 0;
         `,
         CategoryLi: styled.li`
             margin-bottom: 15px;
@@ -286,6 +273,63 @@ const css = {
             }
         `,
     },
+    CartFavoritePurchase: {
+        Container: styled.div`
+            max-width: 1200px;
+            margin: 0 auto;
+        `,
+        ListContainer: styled.section`
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            background-color: white;
+            border: 1px solid rgb(216, 216, 216);
+            border-radius: 10px;
+        `,
+        ItemDetail: styled.li`
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 70px;
+            border-bottom: 1px solid rgb(216, 216, 216);
+            ${props =>
+                props.styleLast ??
+                `&:last-child {
+                display: flex;
+                border: none;
+                justify-content: right;`}}
+        `,
+    },
+    SectionHeader: styled.div`
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 40px;
+        font-weight: bold;
+    `,
+    ModalContainer: styled.div`
+        &:before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
+            background: #000;
+            opacity: 0.5;
+            z-index: 3;
+        }
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 100vh;
+        width: 100vw;
+        z-index: 4;
+    `,
     LabelInput: styled.div`
         display: flex;
         justify-content: ${props => props.justifyContent ?? 'space-evenly'};
@@ -372,6 +416,7 @@ const css = {
             cursor: pointer;
             width: 80%;
             margin: 0 auto;
+            font-size: 16px;
             &:hover {
                 background: ${props => props.btnHoverColor};
             }
@@ -431,7 +476,7 @@ const css = {
     `,
     CrossButton: styled.span`
         position: relative;
-        font-size: 30px;
+        font-size: ${props => props.size};
         right: 10px;
         color: rgb(77, 77, 77);
         cursor: pointer;

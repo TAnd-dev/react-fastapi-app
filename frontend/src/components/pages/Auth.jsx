@@ -104,7 +104,7 @@ function Reg() {
         password2: '',
     });
     const navigate = useNavigate();
-    const { Login: LoginStyle, Form } = css;
+    const { LabelInput, Form } = css;
 
     async function handleFormSubmit(event) {
         event.preventDefault();
@@ -129,7 +129,7 @@ function Reg() {
             style={{ flexDirection: 'row', flexWrap: 'wrap' }}
             onSubmit={handleFormSubmit}
         >
-            <LoginStyle.LoginLabelInput>
+            <LabelInput>
                 <Label
                     htmlFor="email"
                     text="Email"
@@ -150,9 +150,9 @@ function Reg() {
                     }
                     value={userRegData.email}
                 />
-            </LoginStyle.LoginLabelInput>
+            </LabelInput>
 
-            <LoginStyle.LoginLabelInput>
+            <LabelInput>
                 <Label
                     htmlFor="password1"
                     text="Password"
@@ -173,9 +173,9 @@ function Reg() {
                     }
                     value={userRegData.password1}
                 />
-            </LoginStyle.LoginLabelInput>
+            </LabelInput>
 
-            <LoginStyle.LoginLabelInput>
+            <LabelInput>
                 <Label
                     htmlFor="password2"
                     text="Confirm password"
@@ -196,10 +196,14 @@ function Reg() {
                     }
                     value={userRegData.password2}
                 />
-            </LoginStyle.LoginLabelInput>
+            </LabelInput>
 
-            <LoginStyle.LoginLabelInput>
-                <OrangeButton text="Register" width="30%"></OrangeButton>
+            <LabelInput>
+                <OrangeButton
+                    type="submit"
+                    text="Register"
+                    width="30%"
+                ></OrangeButton>
                 <Link
                     to={'/login'}
                     style={{
@@ -217,7 +221,7 @@ function Reg() {
                         Login
                     </BorderSpan>
                 </Link>
-            </LoginStyle.LoginLabelInput>
+            </LabelInput>
         </Form>
     );
 }

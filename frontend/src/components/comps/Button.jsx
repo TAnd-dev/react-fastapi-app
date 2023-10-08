@@ -41,7 +41,11 @@ export function RedButton({ text, width = '80%', onClick }) {
     );
 }
 
-export function CrossButton({ onClick }) {
+export function CrossButton({ onClick, size = '30px', id = null }) {
     const { CrossButton: CrossButtonStyle } = css;
-    return <CrossButtonStyle onClick={onClick}>X</CrossButtonStyle>;
+    return (
+        <CrossButtonStyle id={id} onClick={onClick} size={size}>
+            X
+        </CrossButtonStyle>
+    );
 }

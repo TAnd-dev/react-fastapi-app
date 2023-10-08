@@ -1,6 +1,6 @@
 from sqlalchemy import insert, select, update
 
-from app.card.models import Cards
+from app.cart.models import Carts
 from app.common.models import Images
 from app.database import async_session_maker
 from app.favorite.models import Favorites
@@ -19,7 +19,7 @@ class UserService(BaseService):
             query = insert(Profiles).values(id=user_id, user=user_id)
             await session.execute(query)
 
-            for model in (Cards, Favorites, Purchases):
+            for model in (Carts, Favorites, Purchases):
                 query = insert(model).values(id=user_id, profile_id=user_id)
                 await session.execute(query)
 

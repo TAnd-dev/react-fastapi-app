@@ -6,3 +6,7 @@ class SFavorite(BaseModel):
     item_id: int
     title: str
     price: int
+
+
+class SAddFavorite(BaseModel):
+    item_id: int

@@ -6,6 +6,9 @@ import ItemDetail from './components/pages/ItemDetail.jsx';
 import { Routes, Route } from 'react-router-dom';
 import Login from './components/pages/Auth.jsx';
 import Profile from './components/pages/Profile.jsx';
+import Cart from './components/pages/Cart.jsx';
+import Favorite from './components/pages/Favorite.jsx';
+import Purchase from './components/pages/Purchase.jsx';
 
 export default function App() {
     return (
@@ -24,6 +27,9 @@ export default function App() {
                     element={<Login type={'register'} />}
                 ></Route>
                 <Route path="/user/profile" Component={Profile}></Route>
+                <Route path="/cart" Component={Cart}></Route>
+                <Route path="/favorite" Component={Favorite}></Route>
+                <Route path="/purchase" Component={Purchase}></Route>
             </Routes>
             <Footer />
         </>

@@ -38,7 +38,7 @@ function CategoryTree({ category, categories, onToggle, openCategories }) {
                 )}
             </div>
             {isOpen && (
-                <ul style={{ marginLeft: '10px' }}>
+                <ul style={{ marginLeft: '20px' }}>
                     {filteredCategories.map(childCategory => (
                         <CategoryTree
                             key={childCategory.id}

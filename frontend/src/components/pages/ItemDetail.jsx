@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -98,13 +98,13 @@ function ImageSwiper({ photoList }) {
 }
 
 function ItemRating({ itemDetail, rateData, handleOpenModal }) {
-    const { ItemDetail: ItemDetailStyles } = css;
+    const { ItemDetail: ItemDetailStyles, SectionHeader } = css;
     const userData = useSelector(state => state.userData.userData);
     return (
         <ItemDetailStyles.ItemSubDetail>
-            <ItemDetailStyles.ItemSubDetailsHeader>
+            <SectionHeader>
                 <span>Rating:</span>
-            </ItemDetailStyles.ItemSubDetailsHeader>
+            </SectionHeader>
             <ItemDetailStyles.ItemRating>
                 <h1 style={{ textAlign: 'center', fontSize: '60px' }}>
                     {itemDetail.avg_rate ? itemDetail.avg_rate.toFixed(2) : 0}
@@ -138,12 +138,10 @@ function ItemRating({ itemDetail, rateData, handleOpenModal }) {
 }
 
 function ItemReviews({ reviews }) {
-    const { ItemDetail: ItemDetailStyles } = css;
+    const { ItemDetail: ItemDetailStyles, SectionHeader } = css;
     return (
         <ItemDetailStyles.ItemSubDetail>
-            <ItemDetailStyles.ItemSubDetailsHeader>
-                Reviews:
-            </ItemDetailStyles.ItemSubDetailsHeader>
+            <SectionHeader>Reviews:</SectionHeader>
             {reviews.length > 0 ? (
                 reviews
             ) : (
@@ -163,7 +161,7 @@ function ItemAddReview({
     addReview,
 }) {
     const [dataReview, setDataReview] = useState({ rate: 1, text: '' });
-    const { ItemDetail: ItemDetailStyles, Form, LabelInput } = css;
+    const { SectionHeader, ModalContainer, Form, LabelInput } = css;
     const userData = useSelector(state => state.userData.userData);
 
     async function handleFormSubmit(event) {
@@ -196,14 +194,12 @@ function ItemAddReview({
     }
 
     return (
-        <ItemDetailStyles.ItemAddReviewContainer
-            style={{ display: `${isOpen ? 'flex' : 'none'}` }}
-        >
+        <ModalContainer style={{ display: `${isOpen ? 'flex' : 'none'}` }}>
             <Form onSubmit={handleFormSubmit}>
-                <ItemDetailStyles.ItemSubDetailsHeader>
-                    <span>Add review</span>
+                <SectionHeader>
+                    Add review
                     <CrossButton onClick={() => handleCloseModal(false)} />
-                </ItemDetailStyles.ItemSubDetailsHeader>
+                </SectionHeader>
                 <LabelInput justifyContent="start">
                     <Label
                         htmlFor="reivew-rate"
@@ -244,7 +240,7 @@ function ItemAddReview({
                 </LabelInput>
                 <OrangeButton text="Send"></OrangeButton>
             </Form>
-        </ItemDetailStyles.ItemAddReviewContainer>
+        </ModalContainer>
     );
 }
 
@@ -253,8 +249,15 @@ export default function ItemDetail() {
     const [itemReviews, setItemReviews] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isOpenModal, setIsOpenModal] = useState(false);
+    const [isItemInCart, setIsItemInCart] = useState(false);
     const { itemId } = useParams();
-    const { ItemDetail: ItemDetailStyles, Main, SectionWrapper } = css;
+    const navigate = useNavigate();
+    const {
+        ItemDetail: ItemDetailStyles,
+        SectionHeader,
+        Main,
+        SectionWrapper,
+    } = css;
     const reviews = [];
     const rates = {
         1: 0,
@@ -274,12 +277,45 @@ export default function ItemDetail() {
     }, [itemId]);
 
     useEffect(() => {
+        async function getData() {
+            const request = await fetch(
+                `http://localhost:8000/cart/item_in_cart?item_id=${itemId}`,
+                {
+                    method: 'GET',
+                    credentials: 'include',
+                }
+            );
+            if (request.ok) {
+                const result = await request.json();
+                setIsItemInCart(result);
+            }
+        }
+        getData();
+    }, [itemId]);
+
+    useEffect(() => {
         fetch(`http://localhost:8000/shop/item/${itemId}/reviews`)
             .then(res => res.json())
             .then(result => {
                 setItemReviews(result);
             });
     }, [itemId]);
+
+    async function onClickBuy() {
+        if (isItemInCart) {
+            navigate('/cart', { repalce: true });
+        } else {
+            await fetch('http://localhost:8000/cart/add_item', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ item_id: itemId }),
+            });
+            setIsItemInCart(true);
+        }
+    }
 
     itemReviews.forEach((comment, i) => {
         rates[comment.rate] += 1;
@@ -341,11 +377,9 @@ export default function ItemDetail() {
     return isLoaded ? (
         <Main style={{ display: 'block' }}>
             <SectionWrapper>
-                <ItemDetailStyles.ItemSubDetailsHeader
-                    style={{ marginBottom: '30px' }}
-                >
+                <SectionHeader style={{ marginBottom: '30px' }}>
                     {itemDetail.title}
-                </ItemDetailStyles.ItemSubDetailsHeader>
+                </SectionHeader>
 
                 <ItemDetailStyles.ItemDetailSection>
                     <ImageSwiper photoList={itemDetail.images}></ImageSwiper>
@@ -367,7 +401,11 @@ export default function ItemDetail() {
                             <h2 style={{ marginRight: '20px' }}>
                                 {itemDetail.price}$
                             </h2>
-                            <OrangeButton text="Buy" width="100px" />
+                            <OrangeButton
+                                onClick={onClickBuy}
+                                text={isItemInCart ? 'In cart' : 'Buy'}
+                                width="100px"
+                            />
                         </ItemDetailStyles.ItemDetailBuy>
                     </ItemDetailStyles.ItemDetailRight>
                 </ItemDetailStyles.ItemDetailSection>
@@ -375,9 +413,7 @@ export default function ItemDetail() {
 
             {itemDetail.description.length > 450 && (
                 <ItemDetailStyles.ItemSubDetail>
-                    <ItemDetailStyles.ItemSubDetailsHeader>
-                        Description:
-                    </ItemDetailStyles.ItemSubDetailsHeader>
+                    <SectionHeader>Description:</SectionHeader>
                     <div style={{ padding: '15px', fontSize: '20px' }}>
                         {itemDetail.description}
                     </div>

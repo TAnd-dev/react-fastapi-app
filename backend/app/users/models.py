@@ -24,6 +24,6 @@ class Profiles(Base):
     number_phone = Column(BigInteger)
     photo = Column(ForeignKey('images.id'), default=8)
 
-    card = relationship('Cards', back_populates='profile')
+    cart = relationship('Carts', back_populates='profile')
     purchases = relationship('Purchases', back_populates='profile')
     favorites = relationship('Favorites', back_populates='profile')
