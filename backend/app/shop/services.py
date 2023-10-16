@@ -1,7 +1,11 @@
-from sqlalchemy import select, and_, insert, func, ChunkedIteratorResult
+import os
+
+from sqlalchemy import select, and_, insert, func, delete, distinct
 from sqlalchemy.orm import selectinload
 
 from app.database import async_session_maker
+from app.image.services import ImageService
+from app.purchase.models import purchase_item_user
 from app.services.base_services import BaseService
 from app.shop.models import Items, Reviews, Categories, item_category
 from app.users.models import Users
@@ -10,13 +14,56 @@ from app.users.models import Users
 class ShopService(BaseService):
     model = Items
 
+    async def __get_query_sort_items(self, query, type_sort):
+        if type_sort == 'desc_price':
+            query = query.order_by(self.model.price.desc())
+        elif type_sort == 'asc_price':
+            query = query.order_by(self.model.price)
+        elif type_sort == 'best':
+            query = query.order_by(func.avg(Reviews.rate).desc())
+        elif type_sort == 'popular':
+            query = query.order_by(func.count(purchase_item_user.c.item_id).desc())
+
+        return query
+
+    def __get_unpacked_dict(self, item, nested_key):
+        item_dict = {}
+        for key, value in item.items():
+            if key == nested_key:
+                for item_key, item_value in value.__dict__.items():
+                    item_dict[item_key] = item_value
+            else:
+                item_dict[key] = value
+        return item_dict
+
     @classmethod
-    async def find_all_items(cls, sort, category_id=None, **filters):
+    async def add_new_item(cls, user, categories, files, **values):
+        if not user.is_admin:
+            return False
+
+        for category_id in categories:
+            category = await CategoryService.find_by_id(category_id)
+            if not category:
+                return False
+
+        item_id = (await ShopService.add(**values)).id
+
+        for category_id in categories:
+            await CategoryService.add_category_for_item(item_id=item_id, category_id=category_id)
+
+        for file in files:
+            await ImageService.load_file(file, item_id=item_id)
+
+        return item_id
+
+    @classmethod
+    async def find_all_items(cls, sort, category_id=None):
         async with async_session_maker() as session:
             query = select(
                 cls.model,
                 func.avg(Reviews.rate).label("avg_rate"),
-                func.count(Reviews.item_id).label("count_reviews")
+                func.count(distinct(Reviews.id)).label("count_reviews"),
+                func.count(distinct(purchase_item_user.c.created_at)).label("count_purchases")
             ).where(
                 and_(
                     cls.model.price >= sort.min_price,
@@ -29,8 +76,10 @@ class ShopService(BaseService):
                 selectinload(
                     cls.model.images
                 )
-            ).join(
-                Reviews, cls.model.id == Reviews.item_id, isouter=True
+            ).outerjoin(
+                Reviews, cls.model.id == Reviews.item_id
+            ).outerjoin(
+                purchase_item_user, cls.model.id == purchase_item_user.c.item_id
             )
 
             if category_id and not sort.s:
@@ -49,24 +98,12 @@ class ShopService(BaseService):
                 cls.model.id
             )
 
-            if sort.type_sort == 'desc_price':
-                query = query.order_by(cls.model.price.desc())
-            elif sort.type_sort == 'asc_price':
-                query = query.order_by(cls.model.price)
-            elif sort.type_sort == 'best_grade':
-                query = query.order_by(func.avg(Reviews.rate).desc())
-            # elif sort.type_sort == 'popular'
+            query = await cls.__get_query_sort_items(cls, query, sort.type_sort)
             items = await session.execute(query)
 
             items_list = []
             for item in items.mappings().all():
-                item_dict = {}
-                for key, value in item.items():
-                    if key == 'Items':
-                        for item_key, item_value in value.__dict__.items():
-                            item_dict[item_key] = item_value
-                    else:
-                        item_dict[key] = value
+                item_dict = cls.__get_unpacked_dict(cls, item, 'Items')
                 items_list.append(item_dict)
             return items_list
 
@@ -97,17 +134,22 @@ class ShopService(BaseService):
                 cls.model.id
             )
             item = (await session.execute(query)).mappings().one_or_none()
-            item_dict = {}
 
-            if item:
-                for key, value in item.items():
-                    if key == 'Items':
-                        for item_key, item_value in value.__dict__.items():
-                            item_dict[item_key] = item_value
-                    else:
-                        item_dict[key] = value
+            if not item:
+                return item
 
+            item_dict = cls.__get_unpacked_dict(cls, item, 'Items')
             return item_dict
+
+    @classmethod
+    async def delete_item(cls, item_id):
+        await ImageService.delete_image_by_item_id(item_id)
+        await CategoryService.delete_category_by_item_id(item_id)
+        await ReviewService.delete_review_by_item_id(item_id)
+        async with async_session_maker() as session:
+            query = delete(cls.model).where(cls.model.id == item_id)
+            await session.execute(query)
+            await session.commit()
 
 
 class ReviewService(BaseService):
@@ -126,13 +168,34 @@ class ReviewService(BaseService):
             return comments.mappings().all()
 
     @classmethod
-    async def add_review(cls, **values):
+    async def delete_review_by_item_id(cls, item_id):
         async with async_session_maker() as session:
-            query = insert(cls.model).values(**values).returning(cls.model)
-            result = await session.execute(query)
+            query = delete(cls.model).where(cls.model.item_id == item_id)
+            await session.execute(query)
             await session.commit()
-            return result.scalars().one_or_none()
 
 
 class CategoryService(BaseService):
     model = Categories
+
+    @classmethod
+    async def add_category_for_item(cls, **values):
+        async with async_session_maker() as session:
+            query = insert(item_category).values(**values)
+            await session.execute(query)
+            await session.commit()
+
+    @classmethod
+    async def delete_by_id(cls, id):
+        async with async_session_maker() as session:
+            query = delete(item_category).where(item_category.c.item_id == id)
+            await session.execute(query)
+        await super().delete_by_id(id)
+
+    @classmethod
+    async def delete_category_by_item_id(cls, item_id):
+        async with async_session_maker() as session:
+            query = delete(item_category).where(item_category.c.item_id == item_id).returning(
+                item_category.c.category_id)
+            await session.execute(query)
+            await session.commit()

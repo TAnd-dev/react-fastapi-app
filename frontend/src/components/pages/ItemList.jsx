@@ -14,6 +14,10 @@ import ItemStat from '../comps/Stat';
 
 import css from '../../styles/styles';
 import { FavoritIcon } from '../comps/Icons';
+import { useCookies } from 'react-cookie';
+import { useDispatch, useSelector } from 'react-redux';
+import { changeUserData } from '../../redux-store/reducers/view-user-data';
+import { host } from '../../settings';
 
 const { Main, ItemList: ItemListStyles, Form, BlackOrangeLink } = css;
 
@@ -117,8 +121,10 @@ function ItemList() {
     const [items, setItems] = useState([]);
     const [itemsInCart, setItemsInCart] = useState([]);
     const [itemsInFavorite, setItemsInFavorite] = useState([]);
-    const [searchParams, setSearchParams] = useSearchParams();
+    const userData = useSelector(state => state.userData.userData);
+    const [searchParams] = useSearchParams();
     const { categroyId } = useParams();
+    const [cookies] = useCookies();
 
     useEffect(() => {
         let searchTextParam = '';
@@ -126,7 +132,7 @@ function ItemList() {
             searchTextParam += `${type}=${param}&`;
         });
         fetch(
-            `http://localhost:8000/shop/${
+            `${host}shop/${
                 categroyId ? `category/${categroyId}` : ''
             }?${searchTextParam}`
         )
@@ -135,9 +141,16 @@ function ItemList() {
     }, [searchParams, categroyId]);
 
     useEffect(() => {
+        if (!userData.email) {
+            const cookieCart = cookies.cart ?? [];
+            const cookieCartId = cookieCart.map(item => item.id);
+            setItemsInCart(cookieCartId);
+            return;
+        }
+
         items.forEach(async item => {
             const request = await fetch(
-                `http://localhost:8000/cart/item_in_cart?item_id=${item.id}`,
+                `${host}cart/item_in_cart?item_id=${item.id}`,
                 {
                     method: 'GET',
                     credentials: 'include',
@@ -150,17 +163,25 @@ function ItemList() {
                 }
             }
         });
-    }, [items, itemsInCart]);
+    }, [items, cookies.cart, userData]);
 
     useEffect(() => {
+        if (!userData.email) {
+            const cookieFavorite = cookies.favorite ?? [];
+            const cookieFavoriteId = cookieFavorite.map(item => item.id);
+            setItemsInFavorite(cookieFavoriteId);
+            return;
+        }
+
         items.forEach(async item => {
             const request = await fetch(
-                `http://localhost:8000/favorite/item_in_favorite?item_id=${item.id}`,
+                `${host}favorite/item_in_favorite?item_id=${item.id}`,
                 {
                     method: 'GET',
                     credentials: 'include',
                 }
             );
+
             if (request.ok) {
                 const data = await request.json();
                 if (data && !itemsInFavorite.includes(item.id)) {
@@ -168,7 +189,7 @@ function ItemList() {
                 }
             }
         });
-    }, [items, itemsInFavorite]);
+    }, [items, cookies.favorite, userData]);
 
     const itemList = [];
     items.forEach(item => {
@@ -186,9 +207,7 @@ function ItemList() {
                     addDeleteItemToFovorite={itemId => {
                         if (itemsInFavorite.includes(itemId)) {
                             setItemsInFavorite(
-                                itemsInFavorite.filter(
-                                    itemId => !itemsInFavorite.includes(itemId)
-                                )
+                                itemsInFavorite.filter(i => i !== itemId)
                             );
                         } else {
                             setItemsInFavorite([...itemsInFavorite, itemId]);
@@ -209,45 +228,94 @@ function ItemListDetail({
     isItemInFavorite,
     addDeleteItemToFovorite,
 }) {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-
-    async function onClickBuy(itemId) {
+    const userData = useSelector(state => state.userData.userData);
+    const [cookies, setCookies] = useCookies();
+    async function onClickBuy() {
+        const cookiesCart = cookies.cart ?? [];
         if (isItemInCart) {
             navigate('/cart', { repalce: true });
-        } else {
-            await fetch('http://localhost:8000/cart/add_item', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ item_id: itemId }),
-            });
-            addItemToCart(itemDetail.id);
+            return;
         }
+
+        addItemToCart(itemDetail.id);
+
+        if (!userData.email && !cookiesCart.includes(itemDetail)) {
+            setCookies('cart', [
+                ...cookiesCart,
+                { ...itemDetail, item_id: itemDetail.id, count: 1 },
+            ]);
+            return;
+        }
+        await fetch(`${host}cart/add_item`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ item_id: itemDetail.id }),
+        });
+        dispatch(
+            changeUserData({ ...userData, count_cart: userData.count_cart + 1 })
+        );
     }
 
-    async function onClickFavorite(itemId, isItemInFavorite) {
-        if (isItemInFavorite) {
-            await fetch('http://localhost:8000/favorite/remove_item', {
+    async function onClickFavorite() {
+        const cookiesFavorite = cookies.favorite ?? [];
+        addDeleteItemToFovorite(itemDetail.id);
+
+        if (isItemInFavorite && !userData.email) {
+            console.log('item in favorite, not user');
+            setCookies(
+                'favorite',
+                cookiesFavorite.filter(
+                    itemCookie => itemCookie.id !== itemDetail.id
+                )
+            );
+            return;
+        }
+
+        if (isItemInFavorite && userData.email) {
+            await fetch(`${host}favorite/remove_item`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 credentials: 'include',
-                body: JSON.stringify({ item_id: itemId }),
+                body: JSON.stringify({ item_id: itemDetail.id }),
             });
-        } else {
-            await fetch('http://localhost:8000/favorite/add_item', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ item_id: itemId }),
-            });
+            dispatch(
+                changeUserData({
+                    ...userData,
+                    count_favorite: userData.count_favorite - 1,
+                })
+            );
+            return;
         }
-        addDeleteItemToFovorite(itemDetail.id);
+
+        if (!userData.email) {
+            setCookies('favorite', [
+                ...cookiesFavorite,
+                { ...itemDetail, item_id: itemDetail.id },
+            ]);
+            return;
+        }
+
+        await fetch(`${host}favorite/add_item`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ item_id: itemDetail.id }),
+        });
+        dispatch(
+            changeUserData({
+                ...userData,
+                count_favorite: userData.count_favorite + 1,
+            })
+        );
     }
 
     return (
@@ -255,7 +323,7 @@ function ItemListDetail({
             <ItemListStyles.ItemListDetailLeft>
                 <Link to={`/item/${itemDetail.id}`} relative="path">
                     <ItemListStyles.ItemListDetailImg
-                        src={`http://localhost:8000/${itemDetail.images[0].file_path}`}
+                        src={`${host}${itemDetail.images[0].file_path}`}
                         alt="item"
                     />
                 </Link>
@@ -276,9 +344,7 @@ function ItemListDetail({
                 <h2 style={{ width: '100%' }}>{itemDetail.price} $</h2>
                 <WhiteButton
                     style={{ width: '40px' }}
-                    onClick={() => {
-                        onClickFavorite(itemDetail.id, isItemInFavorite);
-                    }}
+                    onClick={onClickFavorite}
                 >
                     <FavoritIcon color={isItemInFavorite ? '#fc8507' : null} />
                 </WhiteButton>
@@ -288,10 +354,8 @@ function ItemListDetail({
                         fontSize: 'large',
                         transition: 'all 0.5s',
                     }}
-                    isHover={true}
-                    onClick={() => {
-                        onClickBuy(itemDetail.id);
-                    }}
+                    $isHover={true}
+                    onClick={onClickBuy}
                 >
                     {isItemInCart ? 'In cart' : 'Buy'}
                 </WhiteButton>

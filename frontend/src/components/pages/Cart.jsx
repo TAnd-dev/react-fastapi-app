@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import css from '../../styles/styles';
+import { host } from '../../settings';
 
 import { Input } from '../comps/Input';
 import { OrangeButton, CrossButton } from '../comps/Button';
 import { Label } from '../comps/Label';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useCookies } from 'react-cookie';
+import { changeUserData } from '../../redux-store/reducers/view-user-data';
 
 function ModalBuy({
     isOpen,
@@ -33,7 +36,13 @@ function ModalBuy({
                     <Input
                         id={'email'}
                         type={'email'}
-                        value={purchaseDetails.email}
+                        value={purchaseDetails.email ?? ''}
+                        onHandle={e =>
+                            changePurchaseDetails({
+                                ...purchaseDetails,
+                                email: e.target.value,
+                            })
+                        }
                         width="60%"
                         placeholder="Email"
                     ></Input>
@@ -50,7 +59,7 @@ function ModalBuy({
                         id={'firstNname'}
                         type={'text'}
                         width="60%"
-                        value={purchaseDetails.name}
+                        value={purchaseDetails.name ?? ''}
                         onHandle={e =>
                             changePurchaseDetails({
                                 ...purchaseDetails,
@@ -71,7 +80,7 @@ function ModalBuy({
                     <Input
                         id={'secondNname'}
                         type={'text'}
-                        value={purchaseDetails.second_name}
+                        value={purchaseDetails.second_name ?? ''}
                         onHandle={e =>
                             changePurchaseDetails({
                                 ...purchaseDetails,
@@ -93,7 +102,7 @@ function ModalBuy({
                     <Input
                         id={'phone'}
                         type={'number'}
-                        value={purchaseDetails.phone_number}
+                        value={purchaseDetails.phone_number ?? ''}
                         onHandle={e =>
                             changePurchaseDetails({
                                 ...purchaseDetails,
@@ -118,22 +127,33 @@ export default function Cart() {
     const [totalPrice, setTotalPrice] = useState(0);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [purchaseDetails, setPurchaseDetails] = useState({});
+    const [cookies, setCookies, removeCookies] = useCookies();
     const userData = useSelector(state => state.userData.userData);
+    const dispatch = useDispatch();
     const { CartFavoritePurchase, SectionHeader, BlackOrangeLink } = css;
 
     async function deleteItem(e) {
         const deleteId = +e.target.id;
-        await fetch('http://localhost:8000/cart/remove_item', {
-            method: 'DELETE',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ item_id: deleteId }),
-        });
+        if (userData.email) {
+            await fetch(`${host}cart/remove_item`, {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ item_id: deleteId }),
+            });
+            dispatch(
+                changeUserData({
+                    ...userData,
+                    count_cart: userData.count_cart - 1,
+                })
+            );
+        }
 
         const newListItem = items.filter(item => item.item_id !== deleteId);
         setItems(newListItem);
+        setCookies('cart', newListItem);
         setTotalPrice(
             newListItem.reduce(
                 (price, item) => price + item.price * item.count,
@@ -143,34 +163,35 @@ export default function Cart() {
     }
 
     async function setCountItem(e) {
+        const countItems = +e.target.value < 1 ? '' : +e.target.value;
         const newListItem = items.map(item => {
             if (item.item_id === +e.target.name) {
-                return { ...item, count: e.target.value };
+                return { ...item, count: +countItems };
             }
             return item;
         });
         setItems(newListItem);
-
-        try {
-            await fetch('http://localhost:8000/cart/set_count', {
-                method: 'PATCH',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    item_id: e.target.name,
-                    count: +e.target.value,
-                }),
-            });
-
-            setTotalPrice(
-                newListItem.reduce(
-                    (price, item) => price + item.price * item.count,
-                    0
-                )
-            );
-        } catch (error) {}
+        if (userData.email) {
+            try {
+                await fetch(`${host}cart/set_count`, {
+                    method: 'PATCH',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        item_id: e.target.name,
+                        count: +countItems,
+                    }),
+                });
+            } catch (error) {}
+        }
+        setTotalPrice(
+            newListItem.reduce(
+                (price, item) => price + item.price * item.count,
+                0
+            )
+        );
     }
 
     async function onClickApply(e) {
@@ -180,10 +201,10 @@ export default function Cart() {
                 ...purchaseDetails,
                 item_id: item.item_id,
                 count: item.count,
-                price: item.price,
+                price: item.price * item.count,
             });
 
-            await fetch('http://localhost:8000/purchase/add_item', {
+            await fetch(`${host}purchase/add_item`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -193,39 +214,56 @@ export default function Cart() {
             });
         });
 
-        items.map(async item => {
-            await fetch('http://localhost:8000/cart/remove_item', {
-                method: 'DELETE',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ item_id: item.item_id }),
+        if (userData.email) {
+            items.map(async item => {
+                await fetch(`${host}cart/remove_item`, {
+                    method: 'DELETE',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ item_id: item.item_id }),
+                });
             });
-        });
-
+            dispatch(changeUserData({ ...userData, count_cart: 0 }));
+        }
+        removeCookies('cart');
         setItems([]);
         setIsOpenModal(false);
     }
 
     useEffect(() => {
-        fetch('http://localhost:8000/cart', {
-            method: 'GET',
-            credentials: 'include',
-        })
-            .then(res => res.json())
-            .then(result => {
-                setItems(result);
+        async function fetchData() {
+            const request = await fetch(`${host}cart`, {
+                method: 'GET',
+                credentials: 'include',
+            });
+            if (request.ok) {
+                const data = await request.json();
+                setItems(data);
                 setTotalPrice(
-                    result.reduce(
+                    data.reduce(
                         (price, item) => price + item.price * item.count,
                         0
                     )
                 );
-            });
-    }, []);
+            }
+        }
+
+        if (!userData.email) {
+            const data = cookies.cart ?? [];
+            setItems(data);
+            setTotalPrice(
+                data.reduce((price, item) => price + item.price * item.count, 0)
+            );
+            return;
+        }
+
+        fetchData();
+    }, [userData.email, cookies.cart]);
+
     const itemList = [
-        <CartFavoritePurchase.ItemDetail>
+        <CartFavoritePurchase.ItemDetail key={0}>
             <b style={{ width: '59%' }}>Name</b>
             <b style={{ width: '5%' }}>Count</b>
             <b style={{ width: '13%', paddingLeft: '30px' }}>Price</b>
@@ -269,7 +307,7 @@ export default function Cart() {
         );
     });
     itemList.push(
-        <CartFavoritePurchase.ItemDetail>
+        <CartFavoritePurchase.ItemDetail key={999999999}>
             <h3 style={{ marginRight: '10px' }}>Total price:</h3>
             <b style={{ width: '9.5%' }}>{totalPrice}$</b>
             <span style={{ width: '13%' }}>

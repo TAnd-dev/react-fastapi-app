@@ -1,5 +1,4 @@
 from sqlalchemy import select, insert, update, and_, delete
-from sqlalchemy.orm import selectinload
 
 from app.database import async_session_maker
 from app.shop.models import Items
@@ -32,10 +31,17 @@ class BaseService:
     @classmethod
     async def add(cls, **values):
         async with async_session_maker() as session:
-            query = insert(cls.model).values(**values).returning(cls.model.id)
+            query = insert(cls.model).values(**values).returning(cls.model)
             result_id = await session.execute(query)
             await session.commit()
             return result_id.scalars().one_or_none()
+
+    @classmethod
+    async def delete_by_id(cls, id):
+        async with async_session_maker() as session:
+            query = delete(cls.model).where(cls.model.id == id)
+            await session.execute(query)
+            await session.commit()
 
 
 class BaseCartPurchaseFavoriteService:

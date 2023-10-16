@@ -1,13 +1,20 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import css from '../../styles/styles';
+import { useSelector } from 'react-redux';
+import { host } from '../../settings';
 
 export default function Purchase() {
     const [items, setItems] = useState([]);
+    const userData = useSelector(state => state.userData.userData);
     const { CartFavoritePurchase, SectionHeader, BlackOrangeLink } = css;
 
     useEffect(() => {
-        fetch('http://localhost:8000/purchase', {
+        if (!userData.email) {
+            return;
+        }
+
+        fetch(`${host}purchase`, {
             method: 'GET',
             credentials: 'include',
         })
@@ -15,21 +22,19 @@ export default function Purchase() {
             .then(result => {
                 setItems(result);
             });
-    }, []);
+    }, [userData.email]);
+
     const itemList = [
-        <CartFavoritePurchase.ItemDetail>
+        <CartFavoritePurchase.ItemDetail key={0}>
             <b style={{ width: '58%' }}>Name</b>
             <b style={{ width: '5%' }}>Count</b>
             <b style={{ width: '16%', paddingLeft: '30px' }}>Price</b>
         </CartFavoritePurchase.ItemDetail>,
     ];
 
-    items.forEach(item => {
+    items.forEach((item, i) => {
         itemList.push(
-            <CartFavoritePurchase.ItemDetail
-                key={item.item_id}
-                styleLast={false}
-            >
+            <CartFavoritePurchase.ItemDetail key={i + 1} $styleLast={false}>
                 <span style={{ width: '58%' }}>
                     <Link to={`/item/${item.item_id}`} relative="path">
                         <BlackOrangeLink>{item.title}</BlackOrangeLink>

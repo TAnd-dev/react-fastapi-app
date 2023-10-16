@@ -13,6 +13,19 @@ export function RadioInput({ id, value, name, onHandle }) {
     );
 }
 
+export function CheckBoxInput({ id, value, name, onChange }) {
+    return (
+        <input
+            id={id}
+            style={{ width: '10%' }}
+            value={value}
+            name={name}
+            onChange={onChange}
+            type="checkbox"
+        />
+    );
+}
+
 export function Input({
     id,
     type,
@@ -36,7 +49,13 @@ export function Input({
     );
 }
 
-export function TextArea({ onChange, text }) {
+export function TextArea({ onChange, text, style }) {
     const { TextArea: TextAreaStyle } = css;
-    return <TextAreaStyle onChange={onChange} value={text}></TextAreaStyle>;
+    return (
+        <TextAreaStyle
+            style={style}
+            onChange={onChange}
+            value={text}
+        ></TextAreaStyle>
+    );
 }

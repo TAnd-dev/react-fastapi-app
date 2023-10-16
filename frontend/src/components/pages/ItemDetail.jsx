@@ -14,6 +14,8 @@ import ReviewsBar from '../comps/ReviewsRates';
 import { register } from 'swiper/element/bundle';
 
 import css from '../../styles/styles';
+import { useCookies } from 'react-cookie';
+import { host } from '../../settings';
 
 function ImageSwiper({ photoList }) {
     const { ItemDetail: ItemDetailStyles } = css;
@@ -58,7 +60,7 @@ function ImageSwiper({ photoList }) {
         photos.push(
             <swiper-slide style={{ textAlign: 'center' }} key={photo.id}>
                 <ItemDetailStyles.ItemDetailImage
-                    src={`http://localhost:8000/${photo.file_path}`}
+                    src={`${host}${photo.file_path}`}
                     alt={photo.descritption}
                 />
             </swiper-slide>
@@ -66,7 +68,7 @@ function ImageSwiper({ photoList }) {
         smallPhotos.push(
             <swiper-slide style={{ textAlign: 'center' }} key={photo.id}>
                 <ItemDetailStyles.ItemDetailImage
-                    src={`http://localhost:8000/${photo.file_path}`}
+                    src={`${host}${photo.file_path}`}
                     alt={photo.descritption}
                 />
             </swiper-slide>
@@ -97,9 +99,8 @@ function ImageSwiper({ photoList }) {
     );
 }
 
-function ItemRating({ itemDetail, rateData, handleOpenModal }) {
+function ItemRating({ itemDetail, rateData, handleOpenModal, userData }) {
     const { ItemDetail: ItemDetailStyles, SectionHeader } = css;
-    const userData = useSelector(state => state.userData.userData);
     return (
         <ItemDetailStyles.ItemSubDetail>
             <SectionHeader>
@@ -159,25 +160,22 @@ function ItemAddReview({
     itemId,
     reviews,
     addReview,
+    userData,
 }) {
     const [dataReview, setDataReview] = useState({ rate: 1, text: '' });
     const { SectionHeader, ModalContainer, Form, LabelInput } = css;
-    const userData = useSelector(state => state.userData.userData);
 
     async function handleFormSubmit(event) {
         event.preventDefault();
         const formJson = JSON.stringify(dataReview);
-        const request = await fetch(
-            `http://localhost:8000/shop/item/${itemId}/add_review`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: formJson,
-            }
-        );
+        const request = await fetch(`${host}shop/item/${itemId}/add_review`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: formJson,
+        });
         if (request.ok) {
             const reviewData = await request.json();
             addReview([
@@ -200,7 +198,7 @@ function ItemAddReview({
                     Add review
                     <CrossButton onClick={() => handleCloseModal(false)} />
                 </SectionHeader>
-                <LabelInput justifyContent="start">
+                <LabelInput $justifyContent="start">
                     <Label
                         htmlFor="reivew-rate"
                         text="Your rate"
@@ -250,7 +248,9 @@ export default function ItemDetail() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [isItemInCart, setIsItemInCart] = useState(false);
+    const userData = useSelector(state => state.userData.userData);
     const { itemId } = useParams();
+    const [cookies, setCookies] = useCookies();
     const navigate = useNavigate();
     const {
         ItemDetail: ItemDetailStyles,
@@ -268,18 +268,28 @@ export default function ItemDetail() {
     };
 
     useEffect(() => {
-        fetch(`http://localhost:8000/shop/item/${itemId}`)
-            .then(res => res.json())
-            .then(result => {
-                setItemDetail(result);
-                setIsLoaded(true);
-            });
+        async function fetchItem() {
+            const request = await fetch(`${host}shop/item/${itemId}`);
+            if (!request.ok) {
+                return;
+            }
+
+            const result = await request.json();
+            if (!result) {
+                setItemDetail('No such item');
+                return;
+            }
+            setItemDetail(result);
+            setIsLoaded(true);
+        }
+
+        fetchItem();
     }, [itemId]);
 
     useEffect(() => {
         async function getData() {
             const request = await fetch(
-                `http://localhost:8000/cart/item_in_cart?item_id=${itemId}`,
+                `${host}cart/item_in_cart?item_id=${itemId}`,
                 {
                     method: 'GET',
                     credentials: 'include',
@@ -290,31 +300,47 @@ export default function ItemDetail() {
                 setIsItemInCart(result);
             }
         }
-        getData();
-    }, [itemId]);
+
+        if (!isLoaded) return;
+
+        if (userData.email) {
+            getData();
+            return;
+        }
+        const cookieCart = cookies.cart ?? [];
+        setIsItemInCart(cookieCart.map(item => item.id).includes(+itemId));
+    }, [itemId, userData.email, cookies.cart, isLoaded]);
 
     useEffect(() => {
-        fetch(`http://localhost:8000/shop/item/${itemId}/reviews`)
+        if (!isLoaded) return;
+        fetch(`${host}shop/item/${itemId}/reviews`)
             .then(res => res.json())
             .then(result => {
                 setItemReviews(result);
             });
-    }, [itemId]);
+    }, [itemId, isLoaded]);
 
     async function onClickBuy() {
         if (isItemInCart) {
             navigate('/cart', { repalce: true });
-        } else {
-            await fetch('http://localhost:8000/cart/add_item', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ item_id: itemId }),
-            });
-            setIsItemInCart(true);
+            return;
         }
+        setIsItemInCart(true);
+
+        if (!userData.email) {
+            const cookiesCart = cookies.cart ?? [];
+            setCookies('cart', [...cookiesCart, { ...itemDetail, count: 1 }]);
+            return;
+        }
+
+        await fetch(`${host}cart/add_item`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ item_id: itemId }),
+        });
     }
 
     itemReviews.forEach((comment, i) => {
@@ -346,35 +372,16 @@ export default function ItemDetail() {
         0
     );
 
-    const rateData = [
-        {
-            rate: 1,
-            count: rates[1],
-            1: (100 / countRate) * rates[1],
-        },
-        {
-            rate: 2,
-            count: rates[2],
-            2: (100 / countRate) * rates[2],
-        },
-        {
-            rate: 3,
-            count: rates[3],
-            3: (100 / countRate) * rates[3],
-        },
-        {
-            rate: 4,
-            count: rates[4],
-            4: (100 / countRate) * rates[4],
-        },
-        {
-            rate: 5,
-            count: rates[5],
-            5: (100 / countRate) * rates[5],
-        },
-    ];
+    const rateData = [];
 
-    return isLoaded ? (
+    for (let i = 1; i <= 5; i++) {
+        const percentRate = countRate === 0 ? 0 : (100 / countRate) * rates[i];
+        rateData.push({ rate: i, count: rates[i], [i]: percentRate });
+    }
+
+    return itemDetail === 'No such item' ? (
+        <div>No such product</div>
+    ) : isLoaded ? (
         <Main style={{ display: 'block' }}>
             <SectionWrapper>
                 <SectionHeader style={{ marginBottom: '30px' }}>
@@ -424,10 +431,12 @@ export default function ItemDetail() {
                 itemDetail={itemDetail}
                 rateData={rateData}
                 handleOpenModal={setIsOpenModal}
+                userData={userData}
             />
             <ItemReviews reviews={reviews} />
             <ItemAddReview
                 isOpen={isOpenModal}
+                userData={userData}
                 handleCloseModal={setIsOpenModal}
                 itemId={itemDetail.id}
                 reviews={itemReviews}

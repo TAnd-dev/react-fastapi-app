@@ -11,10 +11,13 @@ class SImages(BaseModel):
     description: str
 
 
-class SCategories(BaseModel):
-    id: int
+class SAddCategory(BaseModel):
     name: str
-    parent: Optional[int]
+    parent: Optional[int] = None
+
+
+class SCategories(SAddCategory):
+    id: int
 
 
 class SItems(BaseModel):
@@ -22,11 +25,12 @@ class SItems(BaseModel):
     title: str
     description: str
     price: int
-    created_at: Optional[datetime]
     categories: list[SCategories]
     images: list[SImages]
+    created_at: Optional[datetime]
     avg_rate: Optional[float]
     count_reviews: Optional[int]
+    count_purchases: Optional[int] = 0
 
 
 class SBriefItems(BaseModel):

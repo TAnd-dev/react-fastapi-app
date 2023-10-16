@@ -9,7 +9,7 @@ from alembic import context
 
 from app.database import Base, DATABASE_URL
 
-from app.common.models import Images
+from app.image.models import Images
 from app.shop.models import Categories, Items, Reviews
 from app.users.models import Users, Profiles
 from app.cart.models import Carts

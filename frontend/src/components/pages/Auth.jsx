@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from '../comps/Input';
 import { Label } from '../comps/Label';
 import { BorderSpan } from '../comps/Span';
+import { host } from '../../settings';
 
 import { Link } from 'react-router-dom';
 
@@ -18,7 +19,7 @@ function Login() {
     async function handleFormSubmit(event) {
         event.preventDefault();
         const formJson = JSON.stringify(userData);
-        const request = await fetch('http://localhost:8000/user/auth/login', {
+        const request = await fetch(`${host}user/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -109,17 +110,14 @@ function Reg() {
     async function handleFormSubmit(event) {
         event.preventDefault();
         const formJson = JSON.stringify(userRegData);
-        const request = await fetch(
-            'http://localhost:8000/user/auth/register',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: formJson,
-            }
-        );
+        const request = await fetch(`${host}user/auth/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: formJson,
+        });
         if (request.ok) {
             navigate('/', { repalce: true });
         }

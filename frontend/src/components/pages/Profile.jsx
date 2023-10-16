@@ -5,6 +5,7 @@ import { changeUserData } from '../../redux-store/reducers/view-user-data.js';
 import { OrangeButton, RedButton } from '../comps/Button';
 import { Input } from '../comps/Input';
 import css from '../../styles/styles';
+import { host } from '../../settings.js';
 
 function ShowChangeProfile({
     profileData,
@@ -14,8 +15,8 @@ function ShowChangeProfile({
     const { Profile: ProfileStyles } = css;
 
     return (
-        <ProfileStyles.SectionDetail sectionWidth="60%">
-            <ProfileStyles.ProfileDetail detailWidth="50%">
+        <ProfileStyles.SectionDetail $sectionWidth="60%">
+            <ProfileStyles.ProfileDetail $detailWidth="50%">
                 <h3>Name:</h3>
                 {type === 'changeProfile' ? (
                     <Input
@@ -36,7 +37,7 @@ function ShowChangeProfile({
                 )}
             </ProfileStyles.ProfileDetail>
 
-            <ProfileStyles.ProfileDetail detailWidth="50%">
+            <ProfileStyles.ProfileDetail $detailWidth="50%">
                 <h3>Second Name:</h3>
                 {type === 'changeProfile' ? (
                     <Input
@@ -57,14 +58,14 @@ function ShowChangeProfile({
                 )}
             </ProfileStyles.ProfileDetail>
 
-            <ProfileStyles.ProfileDetail detailWidth="50%">
+            <ProfileStyles.ProfileDetail $detailWidth="50%">
                 <h3>Email:</h3>
                 <ProfileStyles.ProfileDetailSpan>
                     {profileData.email}
                 </ProfileStyles.ProfileDetailSpan>
             </ProfileStyles.ProfileDetail>
 
-            <ProfileStyles.ProfileDetail detailWidth="50%">
+            <ProfileStyles.ProfileDetail $detailWidth="50%">
                 <h3>Number Phone:</h3>
                 {type === 'changeProfile' ? (
                     <Input
@@ -93,19 +94,24 @@ export default function Profile() {
     const userData = useSelector(state => state.userData.userData);
     const dispatch = useDispatch();
     const [typeProfile, setTypeProfile] = useState('profile');
-    const { Main, Profile: ProfileStyles, SectionWrapper } = css;
+    const {
+        Main,
+        Profile: ProfileStyles,
+        SectionWrapper,
+        InputLabelFile,
+    } = css;
 
     useEffect(() => {
         setProfileData({ ...userData });
     }, [userData]);
 
-    const fetchProfileData = async () => {
+    async function fetchProfileData() {
         const dataJson = JSON.stringify({
             name: profileData.name,
             second_name: profileData.second_name,
             number_phone: profileData.number_phone,
         });
-        const response = await fetch('http://localhost:8000/user/profile', {
+        const response = await fetch(`${host}user/profile`, {
             method: 'PATCH',
             credentials: 'include',
             headers: {
@@ -119,7 +125,29 @@ export default function Profile() {
             dispatch(changeUserData(data));
             setTypeProfile('profile');
         }
-    };
+    }
+
+    async function fetchProfilePhoto(e) {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('file', e.target.files[0]);
+
+        fetch(`${host}user/upload_photo`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                accept: 'application/json',
+            },
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                dispatch(changeUserData(data));
+                setProfileData(data);
+            })
+            .catch(error => console.log(error));
+    }
 
     return (
         <Main>
@@ -133,13 +161,13 @@ export default function Profile() {
                 >
                     Your Profile
                 </h1>
-                <ProfileStyles.SectionDetail sectionWidth="40%">
+                <ProfileStyles.SectionDetail $sectionWidth="40%">
                     <ProfileStyles.ProfilePhotoContainer>
-                        <ProfileStyles.ProfilePhoto
-                            src={`http://localhost:8000/${userData.photo}`}
-                            alt="Photo"
+                        <img
+                            src={`${host}${userData.photo}`}
+                            alt="Profile"
+                            style={{ height: '250px' }}
                         />
-                        <span>Change Photo</span>
                     </ProfileStyles.ProfilePhotoContainer>
                 </ProfileStyles.SectionDetail>
                 <ShowChangeProfile
@@ -148,7 +176,24 @@ export default function Profile() {
                     type={typeProfile}
                 ></ShowChangeProfile>
 
-                <ProfileStyles.SectionDetail sectionWidth="100%">
+                <ProfileStyles.SectionDetail
+                    style={{
+                        justifyContent: 'space-around',
+                        marginTop: '20px',
+                    }}
+                    $sectionWidth="100%"
+                >
+                    <form encType="multipart/form-data">
+                        <InputLabelFile.InputFile
+                            type="file"
+                            onChange={fetchProfilePhoto}
+                            id="input__file"
+                            multiple
+                        />
+                        <InputLabelFile.Label htmlFor="input__file">
+                            Change photo
+                        </InputLabelFile.Label>
+                    </form>
                     <div style={{ width: '250px', display: 'flex' }}>
                         <OrangeButton
                             text={

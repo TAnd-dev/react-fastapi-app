@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import css from '../../styles/styles';
 import { ArrowIcon } from './Icons';
+import { host } from '../../settings';
 
 function CategoryTree({ category, categories, onToggle, openCategories }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -62,9 +63,7 @@ export default function Categories() {
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const request = await fetch(
-                'http://localhost:8000/shop/categories'
-            );
+            const request = await fetch(`${host}shop/categories`);
             if (request.ok) {
                 const data = await request.json();
                 setCategories(data);

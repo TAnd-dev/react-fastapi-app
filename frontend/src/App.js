@@ -9,6 +9,8 @@ import Profile from './components/pages/Profile.jsx';
 import Cart from './components/pages/Cart.jsx';
 import Favorite from './components/pages/Favorite.jsx';
 import Purchase from './components/pages/Purchase.jsx';
+import AddProduct from './components/pages/AddProduct.jsx';
+import Admin from './components/pages/Admin.jsx';
 
 export default function App() {
     return (
@@ -30,6 +32,8 @@ export default function App() {
                 <Route path="/cart" Component={Cart}></Route>
                 <Route path="/favorite" Component={Favorite}></Route>
                 <Route path="/purchase" Component={Purchase}></Route>
+                <Route path="/admin" Component={Admin}></Route>
+                <Route path="/admin/add_item" Component={AddProduct}></Route>
             </Routes>
             <Footer />
         </>

@@ -1,13 +1,15 @@
-from fastapi import APIRouter, Response, Depends
+from fastapi import APIRouter, Response, Depends, UploadFile
 
 from app.exceptions import UserAlreadyExistsException, IncorrectPasswordOrEmailException, PasswordMissmatchException
+
+from app.image.services import ImageService
 from app.users.auth import get_password_hash, authenticate_user, create_access_token
 from app.users.dependecies import current_user
 from app.users.models import Users
 from app.users.schemas import SUserAuth, SUserReg, SBriefUserProfile, SUserProfile
 from app.users.services import UserService
 
-router = APIRouter(prefix='/user', tags=['User', 'Auth'])
+router = APIRouter(prefix='/user', tags=['User'])
 
 
 @router.post('/auth/register')
@@ -52,3 +54,9 @@ async def change_user_profile(profile_data: SBriefUserProfile, user: Users = Dep
                                           number_phone=profile_data.number_phone)
     user_data = await UserService.get_user_profile_by_id(user.id)
     return user_data
+
+
+@router.post('/upload_photo')
+async def set_photo(file: UploadFile, user: Users = Depends(current_user)):
+    await ImageService.load_file(file, user_id=user.id)
+    return await UserService.get_user_profile_by_id(user.id)

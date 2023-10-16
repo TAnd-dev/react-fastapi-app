@@ -24,3 +24,6 @@ class SUserProfile(SBriefUserProfile):
     id: int
     email: EmailStr
     photo: Optional[str]
+    count_cart: int
+    count_favorite: int
+    is_admin: bool = False

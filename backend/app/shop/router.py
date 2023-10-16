@@ -28,6 +28,7 @@ async def get_item(item_id: int) -> Optional[SItems]:
     return await ShopService.find_by_id(item_id)
 
 
+
 @router.get('/categories')
 async def get_categories() -> list[SCategories]:
     return await CategoryService.find_all()
@@ -45,4 +46,4 @@ async def get_reviews(item_id: int) -> list[SReview]:
 
 @router.post('/item/{item_id}/add_review')
 async def add_review(item_id: int, review: SAddReview, user: Users = Depends(current_user)) -> SBriefReview:
-    return await ReviewService.add_review(item_id=item_id, text=review.text, rate=review.rate, user_id=user.id)
+    return await ReviewService.add(item_id=item_id, text=review.text, rate=review.rate, user_id=user.id)

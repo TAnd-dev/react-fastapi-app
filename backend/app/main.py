@@ -7,6 +7,7 @@ from app.shop.router import router as shop_router
 from app.cart.router import router as card_router
 from app.favorite.router import router as favorite_router
 from app.purchase.router import router as purchase_router
+from app.admin.router import router as admin_router
 
 app = FastAPI()
 app.include_router(user_router)
@@ -14,6 +15,7 @@ app.include_router(shop_router)
 app.include_router(card_router)
 app.include_router(favorite_router)
 app.include_router(purchase_router)
+app.include_router(admin_router)
 
 origins = [
     'http://localhost:3000',

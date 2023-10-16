@@ -141,6 +141,20 @@ const css = {
         border-radius: 5px;
         margin-left: 10px;
     `,
+    CountItems: styled.div`
+        position: fixed;
+        top: 32px;
+        margin-left: 55px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: orange;
+        color: white;
+        font-size: 12px;
+    `,
 
     Footer: {
         Footer: styled.footer`
@@ -293,7 +307,7 @@ const css = {
             height: 70px;
             border-bottom: 1px solid rgb(216, 216, 216);
             ${props =>
-                props.styleLast ??
+                props.$styleLast ??
                 `&:last-child {
                 display: flex;
                 border: none;
@@ -307,6 +321,16 @@ const css = {
         font-size: 40px;
         font-weight: bold;
     `,
+    Admin: {
+        Container: styled.div`
+            display: flex;
+            flex-direction: column;
+            justify-contnet: center;
+            align-items: center;
+            gap: 15px;
+            font-size: 18px;
+        `,
+    },
     ModalContainer: styled.div`
         &:before {
             content: '';
@@ -332,11 +356,43 @@ const css = {
     `,
     LabelInput: styled.div`
         display: flex;
-        justify-content: ${props => props.justifyContent ?? 'space-evenly'};
+        justify-content: ${props => props.$justifyContent ?? 'space-evenly'};
         align-items: center;
         width: 100%;
         margin: 15px 0;
     `,
+    InputLabelFile: {
+        InputFile: styled.input`
+            opacity: 0;
+            visibility: hidden;
+            position: absolute;
+        `,
+        Label: styled.label`
+            width: 120px;
+            height: 40px;
+            background: #1bbc9b;
+            color: #fff;
+            font-size: 1.125rem;
+            font-weight: 700;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: start;
+            -ms-flex-pack: start;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 0 auto;
+        `,
+        FilesContainer: styled.div`
+            display: flex;
+            flex-direction: column;
+            width: 80%;
+        `,
+    },
     TextArea: styled.textarea`
         min-width: 400px;
         height: 200px;
@@ -351,7 +407,7 @@ const css = {
             display: flex;
             flex-wrap: wrap;
             align-content: flex-start;
-            width: ${props => props.sectionWidth};
+            width: ${props => props.$sectionWidth};
             justify-content: center;
             align-items: center;
         `,
@@ -360,10 +416,9 @@ const css = {
             flex-direction: column;
             align-items: center;
             gap: 20px;
-        `,
-        ProfilePhoto: styled.img`
-            max-width: 250px;
+            width: 250px;
             height: 250px;
+            overflow: hidden;
             border-radius: 50%;
         `,
         ProfileDetail: styled.div`
@@ -371,7 +426,7 @@ const css = {
             flex-wrap: wrap;
             gap: 10px;
             align-items: center;
-            width: ${props => props.detailWidth};
+            width: ${props => props.$detailWidth};
             margin-top: 20px;
         `,
         ProfileDetailSpan: styled.span`
@@ -408,7 +463,7 @@ const css = {
     `,
     Btn: {
         DefaultBtn: styled.button`
-            background: ${props => props.btnColor};
+            background: ${props => props.$btnColor};
             color: white;
             height: 40px;
             border: none;
@@ -418,7 +473,7 @@ const css = {
             margin: 0 auto;
             font-size: 16px;
             &:hover {
-                background: ${props => props.btnHoverColor};
+                background: ${props => props.$btnHoverColor};
             }
         `,
         WhiteBtn: styled.button`
@@ -432,8 +487,8 @@ const css = {
             height: 40px;
 
             &:hover {
-                background: ${props => props.isHover && '#ffa218'};
-                color: ${props => props.isHover && 'white'};
+                background: ${props => props.$isHover && '#ffa218'};
+                color: ${props => props.$isHover && 'white'};
                 border: none;
             }
         `,
@@ -466,6 +521,7 @@ const css = {
     BlackOrangeLink: styled.p`
         color: black;
         transition: all 0.2s;
+        cursor: pointer;
         &:hover {
             color: #fc8507;
         }

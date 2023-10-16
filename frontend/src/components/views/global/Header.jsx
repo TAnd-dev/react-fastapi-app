@@ -15,11 +15,12 @@ import Categories from '../../comps/Categories.jsx';
 import {
     ArrowIcon,
     SearchIcon,
-    CompareIcon,
     CartIcon,
     LoginIcon,
     FavoritIcon,
 } from '../../comps/Icons.jsx';
+import CountItems from '../../comps/CountItems.jsx';
+import { host } from '../../../settings.js';
 
 const {
     HeaderContainer,
@@ -67,7 +68,7 @@ function Catalog({ handleClick, isOpenCategory }) {
 function HeaderSearch() {
     const [searchText, setSearchText] = useState('');
     const [briefItems, setBriefItems] = useState([]);
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [, setSearchParams] = useSearchParams();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -105,7 +106,7 @@ function HeaderSearch() {
     async function getBriefItems(searchValue) {
         if (searchValue) {
             const request = await fetch(
-                `http://localhost:8000/shop/brief_items?search_text=${searchValue}`
+                `${host}shop/brief_items?search_text=${searchValue}`
             );
             if (request.ok) {
                 const data = await request.json();
@@ -147,8 +148,9 @@ function HeaderSearch() {
 
 function HeaderNav() {
     const [isVisibleUserLinks, setIsVisibleUserLinks] = useState(false);
+    const [countCartFavorite, setCountCartFavorite] = useState({});
     const dropdownRef = useRef(null);
-    const [cookies, setCookies, removeCookies] = useCookies();
+    const [cookies, , removeCookies] = useCookies();
     const userData = useSelector(state => state.userData.userData);
     const dispatch = useDispatch();
 
@@ -157,13 +159,10 @@ function HeaderNav() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(
-                    'http://localhost:8000/user/profile',
-                    {
-                        method: 'GET',
-                        credentials: 'include',
-                    }
-                );
+                const response = await fetch(`${host}user/profile`, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
 
                 if (response.ok) {
                     const data = await response.json();
@@ -176,10 +175,10 @@ function HeaderNav() {
                 removeCookies('auth_token');
             }
         };
-        if (cookies['auth_token']) {
+        if (cookies.auth_token) {
             fetchUserData();
         }
-    }, [cookies]);
+    }, [cookies.auth_token, dispatch, removeCookies]);
 
     useEffect(() => {
         const handleOutsideClick = () => {
@@ -194,8 +193,26 @@ function HeaderNav() {
         };
     }, []);
 
+    useEffect(() => {
+        if (!userData.email) {
+            const countCart = cookies.cart ? cookies.cart.length : 0;
+            const countFavorite = cookies.favorite
+                ? cookies.favorite.length
+                : 0;
+            setCountCartFavorite({
+                countCart: countCart,
+                countFavorite: countFavorite,
+            });
+            return;
+        }
+        setCountCartFavorite({
+            countCart: userData.count_cart,
+            countFavorite: userData.count_favorite,
+        });
+    }, [userData, cookies.cart, cookies.favorite]);
+
     async function clickLogout() {
-        await fetch('http://localhost:8000/user/logout', {
+        await fetch(`${host}user/logout`, {
             method: 'POST',
             credentials: 'include',
             header: {
@@ -204,15 +221,20 @@ function HeaderNav() {
         });
         dispatch(changeUserData({}));
     }
-    console.log(isVisibleUserLinks);
     return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
             <HeaderNavBtn
                 link="/favorite"
                 linkText="Favorite"
                 icon={<FavoritIcon />}
+                count={countCartFavorite.countFavorite}
             />
-            <HeaderNavBtn link="/cart" linkText="Cart" icon={<CartIcon />} />
+            <HeaderNavBtn
+                link="/cart"
+                linkText="Cart"
+                icon={<CartIcon />}
+                count={countCartFavorite.countCart}
+            />
             <div
                 onMouseOver={() =>
                     userData.email
@@ -227,7 +249,7 @@ function HeaderNav() {
                             ? `${userData.email.slice(0, 7)}...`
                             : 'login'
                     }
-                    icon={<LoginIcon />}
+                    icon={userData.email ? userData.photo : <LoginIcon />}
                 />
                 {userData.email && isVisibleUserLinks && (
                     <ContainerLogin ref={dropdownRef}>
@@ -241,6 +263,13 @@ function HeaderNav() {
                                 <BlackOrangeLink>Purchase</BlackOrangeLink>
                             </Link>
                         </span>
+                        {userData.is_admin && (
+                            <span>
+                                <Link to={`/admin`} relative="path">
+                                    <BlackOrangeLink>Admin</BlackOrangeLink>
+                                </Link>
+                            </span>
+                        )}
                         <span
                             style={{ color: 'red', cursor: 'pointer' }}
                             onClick={clickLogout}
@@ -254,7 +283,7 @@ function HeaderNav() {
     );
 }
 
-function HeaderNavBtn({ link, linkText, icon }) {
+function HeaderNavBtn({ link, linkText, icon, count }) {
     return (
         <NavBtn>
             {link ? (
@@ -266,10 +295,21 @@ function HeaderNavBtn({ link, linkText, icon }) {
                 </Link>
             ) : (
                 <HeaderBtnLink>
-                    <span>{icon}</span>
+                    <span>
+                        <img
+                            style={{
+                                width: '25px',
+                                height: '25px',
+                                borderRadius: '50%',
+                            }}
+                            src={`${host}${icon}`}
+                            alt="Profile"
+                        />
+                    </span>
                     <span>{linkText}</span>
                 </HeaderBtnLink>
             )}
+            <CountItems count={count} />
         </NavBtn>
     );
 }

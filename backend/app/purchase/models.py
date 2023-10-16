@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import Column, Integer, ForeignKey, Table, DateTime, String
+from sqlalchemy import Column, Integer, ForeignKey, Table, DateTime, String, BigInteger
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -13,7 +13,7 @@ purchase_item_user = Table('purchase_item_user', Base.metadata,
                            Column('email', String),
                            Column('name', String),
                            Column('second_name', String),
-                           Column('phone_number', Integer),
+                           Column('phone_number', BigInteger),
                            Column('created_at', DateTime, default=datetime.datetime.utcnow())
                            )
 

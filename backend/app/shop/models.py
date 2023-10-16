@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Table, Che
 from sqlalchemy.orm import relationship
 
 from app.database import Base
-from app.common.models import Images
+from app.image.models import Images
 
 item_image = Table('item_image', Base.metadata,
                    Column('item_id', Integer, ForeignKey('items.id'), nullable=False),
@@ -22,7 +22,7 @@ class Categories(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
-    parent = Column(ForeignKey('categories.id'), nullable=True)
+    parent = Column(ForeignKey('categories.id', ondelete='CASCADE'), nullable=True)
 
 
 class Items(Base):
