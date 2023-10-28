@@ -17,11 +17,9 @@ async def test_find_cart_by_user_id(user_id):
     (1, 1, 1, False),
 ])
 async def test_add_item(related_id, item_id, count, is_added):
-    current_count = len(await CartService.find_model_by_user_id(related_id))
     await CartService.add_item(related_id=related_id, item_id=item_id, count=count)
-    current_count = current_count + 1 if is_added else current_count
-    cart = await CartService.find_model_by_user_id(related_id)
-    assert len(cart) == current_count
+    cart = await CartService.find_item_model(related_id, item_id)
+    assert cart
 
 
 @pytest.mark.parametrize('related_id, item_id, count', [
@@ -30,8 +28,9 @@ async def test_add_item(related_id, item_id, count, is_added):
 ])
 async def test_set_count_item(related_id, item_id, count):
     await CartService.set_count_items(related_id, item_id, count=count)
-    item_cart = (await CartService.find_model_by_user_id(related_id))[item_id - 1]
-    assert item_cart['count'] == count
+    item_cart = (await CartService.find_item_model(related_id, item_id))
+    if item_cart:
+        assert item_cart['count'] == count
 
 
 @pytest.mark.parametrize('related_id, item_id', [

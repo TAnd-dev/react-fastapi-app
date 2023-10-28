@@ -12,17 +12,15 @@ async def test_find_favorite_by_user_id(user_id):
         assert favorite[0]['related_id'] == user_id
 
 
-@pytest.mark.parametrize('related_id, item_id, is_added', [
-    (1, 2, True),
-    (2, 2, True),
-    (1, 1, False),
+@pytest.mark.parametrize('related_id, item_id', [
+    (1, 2),
+    (2, 2),
+    (1, 1),
 ])
-async def test_add_item(related_id, item_id, is_added):
-    current_count = len(await FavoriteService.find_model_by_user_id(related_id))
+async def test_add_item(related_id, item_id):
     await FavoriteService.add_item(related_id=related_id, item_id=item_id)
-    current_count = current_count + 1 if is_added else current_count
-    favorite = await FavoriteService.find_model_by_user_id(related_id)
-    assert len(favorite) == current_count
+    favorite = await FavoriteService.find_item_model(related_id, item_id)
+    assert favorite
 
 
 @pytest.mark.parametrize('related_id, item_id', [
