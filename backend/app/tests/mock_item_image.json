@@ -1,0 +1,38 @@
+[
+  {
+    "item_id": 1,
+    "image_id": 2
+  },
+  {
+    "item_id": 1,
+    "image_id": 3
+  },
+  {
+    "item_id": 1,
+    "image_id": 4
+  },
+  {
+    "item_id": 2,
+    "image_id": 5
+  },
+  {
+    "item_id": 2,
+    "image_id": 6
+  },
+  {
+    "item_id": 2,
+    "image_id": 7
+  },
+  {
+    "item_id": 2,
+    "image_id": 8
+  },
+  {
+    "item_id": 2,
+    "image_id": 9
+  },
+  {
+    "item_id": 2,
+    "image_id": 10
+  }
+]

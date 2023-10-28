@@ -24,9 +24,15 @@ class Categories(Base):
     name = Column(String, nullable=False)
     parent = Column(ForeignKey('categories.id', ondelete='CASCADE'), nullable=True)
 
+    def __str__(self):
+        return f'{self.id} - {self.name}'
+
 
 class Items(Base):
     __tablename__ = 'items'
+    __table_args__ = (
+        CheckConstraint('price >= 1', name='check_price'),
+    )
 
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
@@ -36,6 +42,10 @@ class Items(Base):
 
     categories = relationship('Categories', secondary=item_category)
     images = relationship('Images', secondary=item_image)
+    reviews = relationship('Reviews', back_populates='item')
+
+    def __str__(self):
+        return self.title
 
 
 class Reviews(Base):
@@ -50,3 +60,9 @@ class Reviews(Base):
     item_id = Column(ForeignKey('items.id'), nullable=False)
     rate = Column(Integer, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.datetime.utcnow())
+
+    item = relationship('Items', back_populates='reviews')
+    user = relationship('Users', backref='reviews')
+
+    def __str__(self):
+        return f'{self.user_id} - {self.item_id} - {self.text[:15]}'

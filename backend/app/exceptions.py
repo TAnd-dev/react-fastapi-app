@@ -41,3 +41,13 @@ class IncorrectTokenException(DefaultException):
 
 class UserIsNotPresent(DefaultException):
     status_code = status.HTTP_401_UNAUTHORIZED
+
+
+class UserIsNotAdmin(DefaultException):
+    status_code = status.HTTP_405_METHOD_NOT_ALLOWED
+    detail = 'User is not admin'
+
+
+class NoSuchCategory(DefaultException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = 'No such category'

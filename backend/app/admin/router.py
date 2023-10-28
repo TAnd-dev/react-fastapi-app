@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Form, UploadFile, File, Depends
 
+from app.exceptions import UserIsNotAdmin
 from app.shop.schemas import SAddCategory
 from app.shop.services import ShopService, CategoryService
 from app.users.dependecies import current_user
@@ -17,6 +18,9 @@ async def add_item(
         files: list[UploadFile] = File(...),
         user: Users = Depends(current_user)):
     categories = categories[0].split(',')
+    if not user.is_admin:
+        raise UserIsNotAdmin
+
     try:
         for i, category in enumerate(categories):
             categories[i] = int(category)
@@ -29,18 +33,21 @@ async def add_item(
 
 @router.delete('/delete_item')
 async def delete_item(item_id: int = Form(...), user: Users = Depends(current_user)):
-    if user.is_admin:
-        await ShopService.delete_item(item_id)
+    if not user.is_admin:
+        raise UserIsNotAdmin
+    await ShopService.delete_item(item_id)
 
 
 @router.post('/add_category')
 async def add_category(category: SAddCategory,
                        user: Users = Depends(current_user)):
-    if user.is_admin:
-        await CategoryService.add(name=category.name, parent=category.parent)
+    if not user.is_admin:
+        raise UserIsNotAdmin
+    await CategoryService.add(name=category.name, parent=category.parent)
 
 
 @router.delete('/delete_category')
 async def delete_category(category_id: int = Form(...), user: Users = Depends(current_user)):
-    if user.is_admin:
-        await CategoryService.delete_by_id(category_id)
+    if not user.is_admin:
+        raise UserIsNotAdmin
+    await CategoryService.delete_by_id(category_id)

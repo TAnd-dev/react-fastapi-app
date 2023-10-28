@@ -1,13 +1,23 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from sqladmin import Admin
 from starlette.middleware.cors import CORSMiddleware
 
+from app.admin.auth import authentication_backend
+from app.admin.views import UserAdmin, ItemAdmin, ProfileAdmin, ReviewAdmin, CategoryAdmin, ImageAdmin, CartAdmin, \
+    FavoriteAdmin, PurchaseAdmin
+from app.config import settings
+from app.database import engine
 from app.users.router import router as user_router
 from app.shop.router import router as shop_router
 from app.cart.router import router as card_router
 from app.favorite.router import router as favorite_router
 from app.purchase.router import router as purchase_router
 from app.admin.router import router as admin_router
+
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from redis import asyncio as aioredis
 
 app = FastAPI()
 app.include_router(user_router)
@@ -34,3 +44,22 @@ app.add_middleware(
 )
 
 app.mount('/static', StaticFiles(directory='app/static'), name='static')
+
+
+@app.on_event("startup")
+def startup():
+    redis = aioredis.from_url(f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}")
+    FastAPICache.init(RedisBackend(redis), prefix="cache")
+
+
+admin = Admin(app, engine, authentication_backend=authentication_backend)
+
+admin.add_view(UserAdmin)
+admin.add_view(ProfileAdmin)
+admin.add_view(ItemAdmin)
+admin.add_view(ReviewAdmin)
+admin.add_view(CategoryAdmin)
+admin.add_view(ImageAdmin)
+admin.add_view(CartAdmin)
+admin.add_view(FavoriteAdmin)
+admin.add_view(PurchaseAdmin)

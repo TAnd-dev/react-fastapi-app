@@ -60,7 +60,7 @@ class BaseCartPurchaseFavoriteService:
                 )
             )
             result = await session.execute(query)
-            return result.scalars().one_or_none()
+            return result.mappings().one_or_none()
 
     @classmethod
     async def find_model_by_user_id(cls, user_id):
@@ -100,6 +100,17 @@ class BaseCartPurchaseFavoriteService:
                     cls.associated_table.c.related_id == user_id,
                     cls.associated_table.c.item_id == item_id
                 )
+            )
+            await session.execute(query)
+            await session.commit()
+
+    @classmethod
+    async def remove_all_items_from_model(cls, item_id):
+        async with async_session_maker() as session:
+            query = delete(
+                cls.associated_table
+            ).where(
+                cls.associated_table.c.item_id == item_id
             )
             await session.execute(query)
             await session.commit()

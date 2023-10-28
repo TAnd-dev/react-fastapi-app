@@ -7,7 +7,7 @@ from app.database import Base
 
 purchase_item_user = Table('purchase_item_user', Base.metadata,
                            Column('related_id', Integer, ForeignKey('purchases.id'), nullable=False),
-                           Column('item_id', Integer, ForeignKey('items.id'), nullable=False),
+                           Column('item_id', Integer, ForeignKey('items.id', ondelete='SET NULL'), nullable=True),
                            Column('count', Integer, default=1, nullable=False),
                            Column('price', Integer),
                            Column('email', String),

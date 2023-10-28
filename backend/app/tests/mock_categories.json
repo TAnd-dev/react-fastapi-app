@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Household Appliances",
+    "parent": null
+  },
+  {
+    "name": "Computers",
+    "parent": null
+  },
+  {
+    "name": "Smartphones",
+    "parent": null
+  },
+  {
+    "name": "Tv",
+    "parent": 1
+  },
+  {
+    "name": "Fridges",
+    "parent": 1
+  },
+  {
+    "name": "Laptops",
+    "parent": 2
+  }
+]

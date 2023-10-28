@@ -1,0 +1,23 @@
+[
+  {
+    "user": 1,
+    "name": "Name",
+    "second_name": "Second Name",
+    "number_phone": 123456789,
+    "photo": 1
+  },
+    {
+    "user": 2,
+    "name": "Name 2",
+    "second_name": "Second Name 2",
+    "number_phone": 987654321,
+    "photo": 11
+  },
+    {
+    "user": 3,
+    "name": "Name 3",
+    "second_name": "Second Name 3",
+    "number_phone": 323,
+    "photo": 11
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "related_id": 1,
+    "item_id": 1,
+    "count": 2,
+    "email": "test@test.com",
+    "name": "Name",
+    "second_name": "Second Name",
+    "phone_number": 123456789,
+    "price": 2000
+  },
+  {
+    "related_id": 2,
+    "item_id": 2,
+    "count": 1,
+    "email": "test2@test.com",
+    "name": "Name 2",
+    "second_name": "Second Name 2",
+    "phone_number": 987654321,
+    "price": 500
+  }
+]

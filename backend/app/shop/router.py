@@ -1,6 +1,8 @@
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import APIRouter, Depends
+from fastapi_cache.decorator import cache
+from pydantic import parse_obj_as
 
 from app.shop.schemas import SItems, SortItems, SAddReview, SCategories, SBriefItems, SReview, SBriefReview
 from app.shop.services import ShopService, CategoryService, ReviewService
@@ -28,8 +30,8 @@ async def get_item(item_id: int) -> Optional[SItems]:
     return await ShopService.find_by_id(item_id)
 
 
-
 @router.get('/categories')
+@cache(expire=60*60)
 async def get_categories() -> list[SCategories]:
     return await CategoryService.find_all()
 

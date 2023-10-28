@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.get('/')
+@router.get('')
 async def get_cart(user: Optional[Users] = Depends(current_user)) -> list[SCart]:
     return await CartService.find_model_by_user_id(user.id)
 

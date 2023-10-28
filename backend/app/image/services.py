@@ -33,6 +33,8 @@ class ImageService(BaseService):
         elif item_id:
             await cls.load_image_for_item(item_id=item_id, image_id=photo_id)
 
+        return file_name
+
     @classmethod
     async def load_image_for_item(cls, **values):
         async with async_session_maker() as session:

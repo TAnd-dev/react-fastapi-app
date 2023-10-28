@@ -5,7 +5,12 @@ import { Link } from 'react-router-dom';
 
 import { Typography, Rating } from '@mui/material';
 
-import { CrossButton, OrangeButton, WhiteButton } from '../comps/Button';
+import {
+    CrossButton,
+    GreyButton,
+    OrangeButton,
+    WhiteButton,
+} from '../comps/Button';
 import { Label } from '../comps/Label';
 import { TextArea } from '../comps/Input';
 import ItemStat from '../comps/Stat';
@@ -16,6 +21,7 @@ import { register } from 'swiper/element/bundle';
 import css from '../../styles/styles';
 import { useCookies } from 'react-cookie';
 import { host } from '../../settings';
+import { isValidText } from '../../services/validators';
 
 function ImageSwiper({ photoList }) {
     const { ItemDetail: ItemDetailStyles } = css;
@@ -57,6 +63,11 @@ function ImageSwiper({ photoList }) {
     }, []);
 
     photoList.forEach(photo => {
+        const photoName = photo.file_path.split('/items/')[1];
+        const smallPhoto = photo.file_path.replace(
+            photoName,
+            'small_' + photoName
+        );
         photos.push(
             <swiper-slide style={{ textAlign: 'center' }} key={photo.id}>
                 <ItemDetailStyles.ItemDetailImage
@@ -68,7 +79,7 @@ function ImageSwiper({ photoList }) {
         smallPhotos.push(
             <swiper-slide style={{ textAlign: 'center' }} key={photo.id}>
                 <ItemDetailStyles.ItemDetailImage
-                    src={`${host}${photo.file_path}`}
+                    src={`${host}${smallPhoto}`}
                     alt={photo.descritption}
                 />
             </swiper-slide>
@@ -163,10 +174,15 @@ function ItemAddReview({
     userData,
 }) {
     const [dataReview, setDataReview] = useState({ rate: 1, text: '' });
+    const [error, setError] = useState(null);
     const { SectionHeader, ModalContainer, Form, LabelInput } = css;
 
     async function handleFormSubmit(event) {
         event.preventDefault();
+        if (!isValidText(dataReview.text)) {
+            setError('Too short comment');
+            return;
+        }
         const formJson = JSON.stringify(dataReview);
         const request = await fetch(`${host}shop/item/${itemId}/add_review`, {
             method: 'POST',
@@ -194,6 +210,7 @@ function ItemAddReview({
     return (
         <ModalContainer style={{ display: `${isOpen ? 'flex' : 'none'}` }}>
             <Form onSubmit={handleFormSubmit}>
+                <span style={{ color: 'red' }}>{error}</span>
                 <SectionHeader>
                     Add review
                     <CrossButton onClick={() => handleCloseModal(false)} />
@@ -227,16 +244,23 @@ function ItemAddReview({
                         marginBottom="0"
                     />
                     <TextArea
-                        onChange={e =>
+                        onChange={e => {
                             setDataReview({
                                 ...dataReview,
                                 text: e.target.value,
-                            })
-                        }
+                            });
+                            isValidText(e.target.value)
+                                ? setError(null)
+                                : setError('Too short comment');
+                        }}
                         text={dataReview.text}
                     ></TextArea>
                 </LabelInput>
-                <OrangeButton text="Send"></OrangeButton>
+                {isValidText(dataReview.text) ? (
+                    <OrangeButton text="Send"></OrangeButton>
+                ) : (
+                    <GreyButton text="send"></GreyButton>
+                )}
             </Form>
         </ModalContainer>
     );

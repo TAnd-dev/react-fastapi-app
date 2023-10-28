@@ -1,0 +1,17 @@
+[
+  {
+    "email": "test@test.com",
+    "hash_password": "$2b$12$sgfQahgDnIeRZkgrbsJuduDogxNTxNZg629fbAVkpTbyHtA35UpL.",
+    "is_admin": true
+  },
+    {
+    "email": "test2@test.com",
+    "hash_password": "$2b$12$/LMt/8lzcytEFg.1DsJZluewUh.UrrzGdB.Zl1MWbv82bvaEhcztO",
+    "is_admin": false
+  },
+    {
+    "email": "tes3@test.com",
+    "hash_password": "$2b$12$/LMt/8lzcytEFg.1DsJZluewUh.UrrzGdB.Zl1MWbv82bvaEhcztO",
+    "is_admin": false
+  }
+]

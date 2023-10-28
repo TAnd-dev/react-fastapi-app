@@ -43,7 +43,7 @@ function HeaderLogo({ handleClick, isOpenCategory }) {
         <HeaderLogoStyle>
             <ContainerLogo>
                 <Link to={'/'}>
-                    <HeaderLogoText>DNS</HeaderLogoText>
+                    <HeaderLogoText>ATA</HeaderLogoText>
                 </Link>
             </ContainerLogo>
             <ContainerCatalog>
@@ -153,6 +153,9 @@ function HeaderNav() {
     const [cookies, , removeCookies] = useCookies();
     const userData = useSelector(state => state.userData.userData);
     const dispatch = useDispatch();
+    const photoName = userData.photo && userData.photo.split('/users/')[1];
+    const photo =
+        photoName && userData.photo.replace(photoName, 'small_' + photoName);
 
     const { ContainerLogin, BlackOrangeLink } = css;
 
@@ -221,6 +224,7 @@ function HeaderNav() {
         });
         dispatch(changeUserData({}));
     }
+
     return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
             <HeaderNavBtn
@@ -249,7 +253,7 @@ function HeaderNav() {
                             ? `${userData.email.slice(0, 7)}...`
                             : 'login'
                     }
-                    icon={userData.email ? userData.photo : <LoginIcon />}
+                    icon={photo ? photo : <LoginIcon />}
                 />
                 {userData.email && isVisibleUserLinks && (
                     <ContainerLogin ref={dropdownRef}>

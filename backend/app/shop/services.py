@@ -1,14 +1,18 @@
-import os
-
 from sqlalchemy import select, and_, insert, func, delete, distinct
 from sqlalchemy.orm import selectinload
 
+from app.cart.services import CartService
 from app.database import async_session_maker
+from app.exceptions import NoSuchCategory
+from app.favorite.services import FavoriteService
 from app.image.services import ImageService
 from app.purchase.models import purchase_item_user
 from app.services.base_services import BaseService
 from app.shop.models import Items, Reviews, Categories, item_category
+from app.shop.schemas import SortItems
 from app.users.models import Users
+
+from app.tasks.tasks import process_pic
 
 
 class ShopService(BaseService):
@@ -26,7 +30,8 @@ class ShopService(BaseService):
 
         return query
 
-    def __get_unpacked_dict(self, item, nested_key):
+    @staticmethod
+    def __get_unpacked_dict(item, nested_key):
         item_dict = {}
         for key, value in item.items():
             if key == nested_key:
@@ -37,14 +42,11 @@ class ShopService(BaseService):
         return item_dict
 
     @classmethod
-    async def add_new_item(cls, user, categories, files, **values):
-        if not user.is_admin:
-            return False
-
+    async def add_new_item(cls, categories, files, **values):
         for category_id in categories:
             category = await CategoryService.find_by_id(category_id)
             if not category:
-                return False
+                raise NoSuchCategory
 
         item_id = (await ShopService.add(**values)).id
 
@@ -52,12 +54,14 @@ class ShopService(BaseService):
             await CategoryService.add_category_for_item(item_id=item_id, category_id=category_id)
 
         for file in files:
-            await ImageService.load_file(file, item_id=item_id)
+            file_name = await ImageService.load_file(file, item_id=item_id)
+            if file_name:
+                process_pic.delay(f'app/static/img/{file_name}')
 
         return item_id
 
     @classmethod
-    async def find_all_items(cls, sort, category_id=None):
+    async def find_all_items(cls, sort: SortItems, category_id=None):
         async with async_session_maker() as session:
             query = select(
                 cls.model,
@@ -103,7 +107,7 @@ class ShopService(BaseService):
 
             items_list = []
             for item in items.mappings().all():
-                item_dict = cls.__get_unpacked_dict(cls, item, 'Items')
+                item_dict = cls.__get_unpacked_dict(item, 'Items')
                 items_list.append(item_dict)
             return items_list
 
@@ -138,7 +142,7 @@ class ShopService(BaseService):
             if not item:
                 return item
 
-            item_dict = cls.__get_unpacked_dict(cls, item, 'Items')
+            item_dict = cls.__get_unpacked_dict(item, 'Items')
             return item_dict
 
     @classmethod
@@ -146,6 +150,8 @@ class ShopService(BaseService):
         await ImageService.delete_image_by_item_id(item_id)
         await CategoryService.delete_category_by_item_id(item_id)
         await ReviewService.delete_review_by_item_id(item_id)
+        await CartService.remove_all_items_from_model(item_id)
+        await FavoriteService.remove_all_items_from_model(item_id)
         async with async_session_maker() as session:
             query = delete(cls.model).where(cls.model.id == item_id)
             await session.execute(query)
@@ -195,7 +201,6 @@ class CategoryService(BaseService):
     @classmethod
     async def delete_category_by_item_id(cls, item_id):
         async with async_session_maker() as session:
-            query = delete(item_category).where(item_category.c.item_id == item_id).returning(
-                item_category.c.category_id)
+            query = delete(item_category).where(item_category.c.item_id == item_id)
             await session.execute(query)
             await session.commit()

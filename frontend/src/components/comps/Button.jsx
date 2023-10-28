@@ -15,6 +15,19 @@ export function OrangeButton({ text, width = '80%', onClick }) {
     );
 }
 
+export function GreyButton({ text, width = '80%', onClick }) {
+    return (
+        <Btn.DefaultBtn
+            $btnColor="linear-gradient(0deg, #b4b4b4 0%, #d1d1d1 100%)"
+            $btnHoverColor="#b4b4b4"
+            style={{ width: width }}
+            onClick={onClick}
+        >
+            {text}
+        </Btn.DefaultBtn>
+    );
+}
+
 export function WhiteButton({
     style = {},
     children,

@@ -9,3 +9,7 @@ class Images(Base):
     id = Column(Integer, primary_key=True)
     file_path = Column(String, nullable=False, unique=True)
     description = Column(String)
+
+    def __str__(self):
+        return self.file_path
+
