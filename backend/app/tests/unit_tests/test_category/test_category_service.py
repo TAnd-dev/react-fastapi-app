@@ -23,19 +23,26 @@ async def test_add_category(name, parent):
     assert num_of_categories + 1 == len(await CategoryService.find_all())
 
 
-@pytest.mark.parametrize('item_id, category_id, is_added', [
-    (1, 1, True),
-    (1, 2, False),
-    (1, 999, False),
-    (999, 1, False),
-])
+@pytest.mark.parametrize(
+    'item_id, category_id, is_added',
+    [
+        (1, 1, True),
+        (1, 2, False),
+        (1, 999, False),
+        (999, 1, False),
+    ],
+)
 async def test_add_category_for_item(item_id, category_id, is_added):
     try:
-        await CategoryService.add_category_for_item(item_id=item_id, category_id=category_id)
+        await CategoryService.add_category_for_item(
+            item_id=item_id, category_id=category_id
+        )
 
         item = await ShopService.find_by_id(item_id)
         category = await CategoryService.find_by_id(category_id)
-        category_in_item = any([category_item.id == category.id for category_item in item['categories']])
+        category_in_item = any(
+            [category_item.id == category.id for category_item in item['categories']]
+        )
         assert category_in_item
 
     except IntegrityError:

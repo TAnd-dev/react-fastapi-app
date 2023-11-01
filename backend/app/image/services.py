@@ -3,7 +3,7 @@ from datetime import datetime
 
 import aiofiles
 from fastapi import UploadFile
-from sqlalchemy import insert, delete
+from sqlalchemy import delete, insert
 
 from app.database import async_session_maker
 from app.image.models import Images
@@ -27,7 +27,11 @@ class ImageService(BaseService):
         except Exception:
             return None
 
-        photo_id = (await ImageService.add(file_path=f'static/img/{file_name}', description=file_name)).id
+        photo_id = (
+            await ImageService.add(
+                file_path=f'static/img/{file_name}', description=file_name
+            )
+        ).id
         if user_id:
             await UserService.update_user_profile(user_id=user_id, photo=photo_id)
         elif item_id:
@@ -45,7 +49,11 @@ class ImageService(BaseService):
     @classmethod
     async def delete_image_by_item_id(cls, item_id):
         async with async_session_maker() as session:
-            query = delete(item_image).where(item_image.c.item_id == item_id).returning(item_image.c.image_id)
+            query = (
+                delete(item_image)
+                .where(item_image.c.item_id == item_id)
+                .returning(item_image.c.image_id)
+            )
             image_ids = await session.execute(query)
             for image_id in image_ids.scalars().all():
                 query = delete(cls.model).where(cls.model.id == image_id)
@@ -55,4 +63,3 @@ class ImageService(BaseService):
         for file in os.listdir('app/static/img/items'):
             if file.startswith(f'{item_id}--'):
                 os.remove(f'app/static/img/items/{file}')
-

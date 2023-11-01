@@ -1,10 +1,11 @@
 from datetime import datetime
 
-from fastapi import Request, Depends
+from fastapi import Depends, Request
 from jose import JWTError, jwt
 
 from app.config import settings
-from app.exceptions import TokenExpiredException, TokenAbsentException, IncorrectTokenException, UserIsNotPresent
+from app.exceptions import (IncorrectTokenException, TokenAbsentException,
+                            TokenExpiredException, UserIsNotPresent)
 from app.users.services import UserService
 
 
@@ -17,8 +18,7 @@ def get_token(request: Request):
 
 async def current_user(token: str = Depends(get_token)):
     try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, settings.ALGORITHM)
+        payload = jwt.decode(token, settings.SECRET_KEY, settings.ALGORITHM)
     except JWTError:
         raise IncorrectTokenException()
 

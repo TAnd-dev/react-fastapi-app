@@ -1,4 +1,3 @@
-import pytest
 from httpx import AsyncClient
 
 from app.purchase.services import PurchaseService
@@ -11,15 +10,18 @@ async def test_get_cart(auth_ac: AsyncClient):
 
 async def test_add_item_to_cart(auth_ac: AsyncClient):
     assert not (await PurchaseService.find_item_model(1, 2))
-    response = await auth_ac.post('/purchase/add_item', json={
-        'item_id': 2,
-        'count': 1,
-        'email': 'test@example.com',
-        'name': 'NameTest',
-        'second_name': 'SecondNameTest',
-        'phone_number': 2345343,
-        'price': 1000
-    })
+    response = await auth_ac.post(
+        '/purchase/add_item',
+        json={
+            'item_id': 2,
+            'count': 1,
+            'email': 'test@example.com',
+            'name': 'NameTest',
+            'second_name': 'SecondNameTest',
+            'phone_number': 2345343,
+            'price': 1000,
+        },
+    )
     assert response.status_code == 200
     item_purchase = await PurchaseService.find_item_model(1, 2)
     assert item_purchase

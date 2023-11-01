@@ -1,12 +1,14 @@
-from sqlalchemy import Column, Integer, ForeignKey, Table
+from sqlalchemy import Column, ForeignKey, Integer, Table
 from sqlalchemy.orm import relationship
 
 from app.database import Base
 
-favorites_item_user = Table('favorites_item_user', Base.metadata,
-                            Column('related_id', Integer, ForeignKey('favorites.id'), nullable=False),
-                            Column('item_id', Integer, ForeignKey('items.id'), nullable=False)
-                            )
+favorites_item_user = Table(
+    'favorites_item_user',
+    Base.metadata,
+    Column('related_id', Integer, ForeignKey('favorites.id'), nullable=False),
+    Column('item_id', Integer, ForeignKey('items.id'), nullable=False),
+)
 
 
 class Favorites(Base):

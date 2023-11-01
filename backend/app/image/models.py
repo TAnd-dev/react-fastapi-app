@@ -12,4 +12,3 @@ class Images(Base):
 
     def __str__(self):
         return self.file_path
-

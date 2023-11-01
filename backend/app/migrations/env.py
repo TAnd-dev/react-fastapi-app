@@ -1,20 +1,17 @@
 import sys
 from logging.config import fileConfig
-from os.path import dirname, abspath
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from os.path import abspath, dirname
 
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
-from app.database import Base, DATABASE_URL
-
-from app.image.models import Images
-from app.shop.models import Categories, Items, Reviews
-from app.users.models import Users, Profiles
 from app.cart.models import Carts
+from app.database import DATABASE_URL, Base
 from app.favorite.models import Favorites
+from app.image.models import Images
 from app.purchase.models import Purchases
+from app.shop.models import Categories, Items, Reviews
+from app.users.models import Profiles, Users
 
 sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 

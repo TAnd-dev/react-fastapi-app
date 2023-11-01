@@ -1,23 +1,24 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from fastapi_pagination import add_pagination
+from redis import asyncio as aioredis
 from sqladmin import Admin
 from starlette.middleware.cors import CORSMiddleware
 
 from app.admin.auth import authentication_backend
-from app.admin.views import UserAdmin, ItemAdmin, ProfileAdmin, ReviewAdmin, CategoryAdmin, ImageAdmin, CartAdmin, \
-    FavoriteAdmin, PurchaseAdmin
+from app.admin.router import router as admin_router
+from app.admin.views import (CartAdmin, CategoryAdmin, FavoriteAdmin,
+                             ImageAdmin, ItemAdmin, ProfileAdmin,
+                             PurchaseAdmin, ReviewAdmin, UserAdmin)
+from app.cart.router import router as card_router
 from app.config import settings
 from app.database import engine
-from app.users.router import router as user_router
-from app.shop.router import router as shop_router
-from app.cart.router import router as card_router
 from app.favorite.router import router as favorite_router
 from app.purchase.router import router as purchase_router
-from app.admin.router import router as admin_router
-
-from fastapi_cache import FastAPICache
-from fastapi_cache.backends.redis import RedisBackend
-from redis import asyncio as aioredis
+from app.shop.router import router as shop_router
+from app.users.router import router as user_router
 
 app = FastAPI()
 app.include_router(user_router)
@@ -39,11 +40,17 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=['GET', 'POST', 'OPTIONS', 'DELETE', 'PATCH', 'PUT'],
-    allow_headers=['Content-Type', 'Set-Cookie', 'Access-Control-Allow-Header', 'Access-Control-Allow-Origin',
-                   'Authorization']
+    allow_headers=[
+        'Content-Type',
+        'Set-Cookie',
+        'Access-Control-Allow-Header',
+        'Access-Control-Allow-Origin',
+        'Authorization',
+    ],
 )
 
 app.mount('/static', StaticFiles(directory='app/static'), name='static')
+add_pagination(app)
 
 
 @app.on_event("startup")

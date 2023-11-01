@@ -13,18 +13,16 @@ class PurchaseService(BaseCartPurchaseFavoriteService):
     @classmethod
     async def find_model_by_user_id(cls, user_id):
         async with async_session_maker() as session:
-            query = select(
-                cls.associated_table,
-                Items.title,
-                Items.price,
-            ).where(
-                cls.associated_table.c.related_id == user_id
-            ).join(
-                cls.model, cls.associated_table.c.related_id == cls.model.id
-            ).join(
-                Items, cls.associated_table.c.item_id == Items.id
-            ).order_by(
-                cls.associated_table.c.created_at.desc()
+            query = (
+                select(
+                    cls.associated_table,
+                    Items.title,
+                    Items.price,
+                )
+                .where(cls.associated_table.c.related_id == user_id)
+                .join(cls.model, cls.associated_table.c.related_id == cls.model.id)
+                .join(Items, cls.associated_table.c.item_id == Items.id)
+                .order_by(cls.associated_table.c.created_at.desc())
             )
             result = await session.execute(query)
             return result.mappings().all()

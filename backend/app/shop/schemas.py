@@ -52,8 +52,15 @@ class SReview(SBriefReview):
     email: Optional[EmailStr]
 
 
+class SCountReview(BaseModel):
+    rate: int
+    count_rate: int
+
+
 class SortItems:
-    def __init__(self, type_sort: str = '', min_price: str = '', max_price: str = '', s: str = ''):
+    def __init__(
+            self, type_sort: str = '', min_price: str = '', max_price: str = '', s: str = ''
+    ):
         try:
             self.min_price = int(min_price)
         except ValueError:

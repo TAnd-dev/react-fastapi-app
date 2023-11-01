@@ -6,6 +6,8 @@ import {
     useNavigate,
 } from 'react-router-dom';
 
+import Pagination from '@mui/material/Pagination';
+
 import { OrangeButton } from '../comps/Button';
 import { RadioInput, Input } from '../comps/Input';
 import { Label } from '../comps/Label';
@@ -118,13 +120,18 @@ function Sidebar() {
 }
 
 function ItemList() {
-    const [items, setItems] = useState([]);
+    const [itemsPage, setItemsPage] = useState({ items: [] });
     const [itemsInCart, setItemsInCart] = useState([]);
     const [itemsInFavorite, setItemsInFavorite] = useState([]);
     const userData = useSelector(state => state.userData.userData);
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const { categroyId } = useParams();
     const [cookies] = useCookies();
+
+    function onChangePage(page) {
+        searchParams.set('page', page);
+        setSearchParams(searchParams);
+    }
 
     useEffect(() => {
         let searchTextParam = '';
@@ -134,10 +141,10 @@ function ItemList() {
         fetch(
             `${host}shop/${
                 categroyId ? `category/${categroyId}` : ''
-            }?${searchTextParam}`
+            }?${searchTextParam}size=15`
         )
             .then(res => res.json())
-            .then(result => setItems(result));
+            .then(result => setItemsPage(result));
     }, [searchParams, categroyId]);
 
     useEffect(() => {
@@ -148,7 +155,7 @@ function ItemList() {
             return;
         }
 
-        items.forEach(async item => {
+        itemsPage.items.forEach(async item => {
             const request = await fetch(
                 `${host}cart/item_in_cart?item_id=${item.id}`,
                 {
@@ -163,7 +170,7 @@ function ItemList() {
                 }
             }
         });
-    }, [items, cookies.cart, userData]);
+    }, [itemsPage.items, cookies.cart, userData]);
 
     useEffect(() => {
         if (!userData.email) {
@@ -173,7 +180,7 @@ function ItemList() {
             return;
         }
 
-        items.forEach(async item => {
+        itemsPage.items.forEach(async item => {
             const request = await fetch(
                 `${host}favorite/item_in_favorite?item_id=${item.id}`,
                 {
@@ -189,10 +196,10 @@ function ItemList() {
                 }
             }
         });
-    }, [items, cookies.favorite, userData]);
+    }, [itemsPage.items, cookies.favorite, userData]);
 
     const itemList = [];
-    items.forEach(item => {
+    itemsPage.items.forEach(item => {
         itemList.push(
             <li style={{ marginBottom: '20px' }} key={item.id}>
                 <ItemListDetail
@@ -217,8 +224,23 @@ function ItemList() {
             </li>
         );
     });
-
-    return <div style={{ width: '70%' }}>{itemList}</div>;
+    return (
+        <>
+            <div style={{ width: '70%' }}>{itemList}</div>
+            {itemsPage.page && (
+                <Pagination
+                    page={itemsPage.page}
+                    count={itemsPage.pages}
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                    }}
+                    onChange={(e, page) => onChangePage(page)}
+                />
+            )}
+        </>
+    );
 }
 
 function ItemListDetail({

@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { Typography, Rating } from '@mui/material';
+import Pagination from '@mui/material/Pagination';
 
 import {
     CrossButton,
@@ -149,7 +150,7 @@ function ItemRating({ itemDetail, rateData, handleOpenModal, userData }) {
     );
 }
 
-function ItemReviews({ reviews }) {
+function ItemReviews({ reviews, pageInfo, onChangePage }) {
     const { ItemDetail: ItemDetailStyles, SectionHeader } = css;
     return (
         <ItemDetailStyles.ItemSubDetail>
@@ -161,6 +162,16 @@ function ItemReviews({ reviews }) {
                     No reviews yet. Be the first
                 </h2>
             )}
+            <Pagination
+                page={pageInfo.page}
+                count={pageInfo.pages}
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                }}
+                onChange={(e, page) => onChangePage(page)}
+            />
         </ItemDetailStyles.ItemSubDetail>
     );
 }
@@ -194,14 +205,11 @@ function ItemAddReview({
         });
         if (request.ok) {
             const reviewData = await request.json();
-            addReview([
-                {
-                    email: userData.email,
-                    rate: reviewData.rate,
-                    text: reviewData.text,
-                },
-                ...reviews,
-            ]);
+            addReview({
+                email: userData.email,
+                rate: reviewData.rate,
+                text: reviewData.text,
+            });
             handleCloseModal(false);
             setDataReview({ rate: 1, text: '' });
         }
@@ -259,7 +267,7 @@ function ItemAddReview({
                 {isValidText(dataReview.text) ? (
                     <OrangeButton text="Send"></OrangeButton>
                 ) : (
-                    <GreyButton text="send"></GreyButton>
+                    <GreyButton text="Send"></GreyButton>
                 )}
             </Form>
         </ModalContainer>
@@ -268,14 +276,26 @@ function ItemAddReview({
 
 export default function ItemDetail() {
     const [itemDetail, setItemDetail] = useState({});
-    const [itemReviews, setItemReviews] = useState([]);
+    const [itemReviewsPage, setItemReviewsPage] = useState({
+        items: [],
+        page: 1,
+    });
     const [isLoaded, setIsLoaded] = useState(false);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [isItemInCart, setIsItemInCart] = useState(false);
+    const [rates, setRates] = useState({});
     const userData = useSelector(state => state.userData.userData);
     const { itemId } = useParams();
     const [cookies, setCookies] = useCookies();
     const navigate = useNavigate();
+
+    function addReview(newReview) {
+        setItemReviewsPage({
+            ...itemReviewsPage,
+            count: itemReviewsPage.count + 1,
+            items: [newReview, ...itemReviewsPage.items],
+        });
+    }
     const {
         ItemDetail: ItemDetailStyles,
         SectionHeader,
@@ -283,13 +303,6 @@ export default function ItemDetail() {
         SectionWrapper,
     } = css;
     const reviews = [];
-    const rates = {
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
-        5: 0,
-    };
 
     useEffect(() => {
         async function fetchItem() {
@@ -337,13 +350,44 @@ export default function ItemDetail() {
 
     useEffect(() => {
         if (!isLoaded) return;
-        fetch(`${host}shop/item/${itemId}/reviews`)
+        fetch(
+            `${host}shop/item/${itemId}/reviews?page=${itemReviewsPage.page}&size=20`
+        )
             .then(res => res.json())
             .then(result => {
-                setItemReviews(result);
+                setItemReviewsPage(result);
             });
-    }, [itemId, isLoaded]);
+    }, [itemId, isLoaded, itemReviewsPage.page]);
 
+    useEffect(() => {
+        async function fetchCountRate() {
+            const rates = {
+                1: 0,
+                2: 0,
+                3: 0,
+                4: 0,
+                5: 0,
+            };
+
+            const request = await fetch(
+                `${host}shop/item/${itemId}/count_rate`
+            );
+            if (!request.ok) {
+                return;
+            }
+
+            const result = await request.json();
+            if (!result) {
+                return;
+            }
+            result.forEach(rate => {
+                rates[rate.rate] = rate.count_rate;
+            });
+            setRates(rates);
+        }
+
+        fetchCountRate();
+    }, [itemId]);
     async function onClickBuy() {
         if (isItemInCart) {
             navigate('/cart', { repalce: true });
@@ -366,9 +410,7 @@ export default function ItemDetail() {
             body: JSON.stringify({ item_id: itemId }),
         });
     }
-
-    itemReviews.forEach((comment, i) => {
-        rates[comment.rate] += 1;
+    itemReviewsPage.items.forEach((comment, i) => {
         reviews.push(
             <div key={i} style={{ width: '100%' }}>
                 <h3 style={{ margin: '30px auto 10px 5px' }}>
@@ -457,14 +499,23 @@ export default function ItemDetail() {
                 handleOpenModal={setIsOpenModal}
                 userData={userData}
             />
-            <ItemReviews reviews={reviews} />
+            <ItemReviews
+                reviews={reviews}
+                pageInfo={{
+                    page: itemReviewsPage.page,
+                    pages: itemReviewsPage.pages,
+                }}
+                onChangePage={page =>
+                    setItemReviewsPage({ ...itemReviewsPage, page: page })
+                }
+            />
             <ItemAddReview
                 isOpen={isOpenModal}
                 userData={userData}
                 handleCloseModal={setIsOpenModal}
                 itemId={itemDetail.id}
-                reviews={itemReviews}
-                addReview={setItemReviews}
+                reviews={itemReviewsPage.items}
+                addReview={addReview}
             />
         </Main>
     ) : (

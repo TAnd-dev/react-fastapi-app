@@ -1,13 +1,16 @@
-from fastapi import APIRouter, Response, Depends, UploadFile
+from fastapi import APIRouter, Depends, Response, UploadFile
 
-from app.exceptions import UserAlreadyExistsException, IncorrectPasswordOrEmailException, PasswordMissmatchException
-
+from app.exceptions import (IncorrectPasswordOrEmailException,
+                            PasswordMissmatchException,
+                            UserAlreadyExistsException)
 from app.image.services import ImageService
 from app.tasks.tasks import process_pic
-from app.users.auth import get_password_hash, authenticate_user, create_access_token
+from app.users.auth import (authenticate_user, create_access_token,
+                            get_password_hash)
 from app.users.dependecies import current_user
 from app.users.models import Users
-from app.users.schemas import SUserAuth, SUserReg, SBriefUserProfile, SUserProfile
+from app.users.schemas import (SBriefUserProfile, SUserAuth, SUserProfile,
+                               SUserReg)
 from app.users.services import UserService
 
 router = APIRouter(prefix='/user', tags=['User'])
@@ -21,7 +24,9 @@ async def register_user(response: Response, user_data: SUserReg):
     if existing_user:
         raise UserAlreadyExistsException()
     hashed_password = get_password_hash(user_data.password1)
-    user_id = await UserService.add(email=user_data.email, hash_password=hashed_password)
+    user_id = await UserService.add(
+        email=user_data.email, hash_password=hashed_password
+    )
     access_token = create_access_token({'sub': str(user_id)})
     response.set_cookie('auth_token', access_token)
 
@@ -48,11 +53,15 @@ async def get_user_profile(user: Users = Depends(current_user)) -> SUserProfile:
 
 
 @router.patch('/profile')
-async def change_user_profile(profile_data: SBriefUserProfile, user: Users = Depends(current_user)) -> SUserProfile:
-    await UserService.update_user_profile(user_id=user.id,
-                                          name=profile_data.name,
-                                          second_name=profile_data.second_name,
-                                          number_phone=profile_data.number_phone)
+async def change_user_profile(
+    profile_data: SBriefUserProfile, user: Users = Depends(current_user)
+) -> SUserProfile:
+    await UserService.update_user_profile(
+        user_id=user.id,
+        name=profile_data.name,
+        second_name=profile_data.second_name,
+        number_phone=profile_data.number_phone,
+    )
     user_data = await UserService.get_user_profile_by_id(user.id)
     return user_data
 

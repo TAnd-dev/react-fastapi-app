@@ -5,20 +5,20 @@ import pytest
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from httpx import AsyncClient
+from redis import asyncio as aioredis
 from sqlalchemy import insert
 
-from redis import asyncio as aioredis
-
+from app.cart.models import Carts, cart_item
 from app.config import settings
-from app.database import engine, Base, async_session_maker
-
+from app.database import Base, async_session_maker, engine
+from app.favorite.models import Favorites, favorites_item_user
 from app.image.models import Images
 from app.main import app as fastapi_app
-from app.shop.models import Categories, Items, Reviews, item_image as item_image_model, item_category
-from app.users.models import Users, Profiles
-from app.cart.models import Carts, cart_item
-from app.favorite.models import Favorites, favorites_item_user
-from app.purchase.models import Purchases, purchase_item_user as purchase_item_user_model
+from app.purchase.models import Purchases
+from app.purchase.models import purchase_item_user as purchase_item_user_model
+from app.shop.models import Categories, Items, Reviews, item_category
+from app.shop.models import item_image as item_image_model
+from app.users.models import Profiles, Users
 
 
 @pytest.fixture(scope='session', autouse=True)

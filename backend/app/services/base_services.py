@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert, update, and_, delete
+from sqlalchemy import and_, delete, insert, select, update
 
 from app.database import async_session_maker
 from app.shop.models import Items
@@ -51,12 +51,10 @@ class BaseCartPurchaseFavoriteService:
     @classmethod
     async def find_item_model(cls, user_id, item_id):
         async with async_session_maker() as session:
-            query = select(
-                cls.associated_table
-            ).where(
+            query = select(cls.associated_table).where(
                 and_(
                     cls.associated_table.c.related_id == user_id,
-                    cls.associated_table.c.item_id == item_id
+                    cls.associated_table.c.item_id == item_id,
                 )
             )
             result = await session.execute(query)
@@ -65,16 +63,15 @@ class BaseCartPurchaseFavoriteService:
     @classmethod
     async def find_model_by_user_id(cls, user_id):
         async with async_session_maker() as session:
-            query = select(
-                cls.associated_table,
-                Items.title,
-                Items.price,
-            ).where(
-                cls.associated_table.c.related_id == user_id
-            ).join(
-                cls.model, cls.associated_table.c.related_id == cls.model.id
-            ).join(
-                Items, cls.associated_table.c.item_id == Items.id
+            query = (
+                select(
+                    cls.associated_table,
+                    Items.title,
+                    Items.price,
+                )
+                .where(cls.associated_table.c.related_id == user_id)
+                .join(cls.model, cls.associated_table.c.related_id == cls.model.id)
+                .join(Items, cls.associated_table.c.item_id == Items.id)
             )
             result = await session.execute(query)
             return result.mappings().all()
@@ -82,23 +79,17 @@ class BaseCartPurchaseFavoriteService:
     @classmethod
     async def add_item(cls, **values):
         async with async_session_maker() as session:
-            query = insert(
-                cls.associated_table
-            ).values(
-                **values
-            )
+            query = insert(cls.associated_table).values(**values)
             await session.execute(query)
             await session.commit()
 
     @classmethod
     async def remove_item_from_model(cls, user_id, item_id):
         async with async_session_maker() as session:
-            query = delete(
-                cls.associated_table
-            ).where(
+            query = delete(cls.associated_table).where(
                 and_(
                     cls.associated_table.c.related_id == user_id,
-                    cls.associated_table.c.item_id == item_id
+                    cls.associated_table.c.item_id == item_id,
                 )
             )
             await session.execute(query)
@@ -107,9 +98,7 @@ class BaseCartPurchaseFavoriteService:
     @classmethod
     async def remove_all_items_from_model(cls, item_id):
         async with async_session_maker() as session:
-            query = delete(
-                cls.associated_table
-            ).where(
+            query = delete(cls.associated_table).where(
                 cls.associated_table.c.item_id == item_id
             )
             await session.execute(query)

@@ -4,8 +4,8 @@ from app.cart.models import Carts
 from app.favorite.models import Favorites
 from app.image.models import Images
 from app.purchase.models import Purchases
-from app.shop.models import Items, Reviews, Categories
-from app.users.models import Users, Profiles
+from app.shop.models import Categories, Items, Reviews
+from app.users.models import Profiles, Users
 
 
 class UserAdmin(ModelView, model=Users):
@@ -31,7 +31,9 @@ class ItemAdmin(ModelView, model=Items):
 
 class ReviewAdmin(ModelView, model=Reviews):
     column_list = [review.name for review in Reviews.__table__.c]
-    column_details_list = [review.name for review in Reviews.__table__.c] + [Reviews.user]
+    column_details_list = [review.name for review in Reviews.__table__.c] + [
+        Reviews.user
+    ]
     can_delete = True
     name = 'Review'
     name_plural = 'Reviews'
