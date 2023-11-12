@@ -1,3 +1,4 @@
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi_cache import FastAPICache
@@ -27,6 +28,12 @@ app.include_router(card_router)
 app.include_router(favorite_router)
 app.include_router(purchase_router)
 app.include_router(admin_router)
+
+sentry_sdk.init(
+    dsn="https://a3032a5bbbfc7606584207766a1e128f@o4506150343081984.ingest.sentry.io/4506150345965568",
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
 
 origins = [
     'http://localhost:3000',

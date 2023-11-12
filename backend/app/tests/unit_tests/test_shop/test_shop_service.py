@@ -59,12 +59,10 @@ async def test_find_item_by_id(item_id, is_exists):
     ],
 )
 async def test_add_item(title, description, price, is_added):
-    try:
-        num_of_items = len(await ShopService.find_all_items(SortItems()))
-        await ShopService.add(title=title, description=description, price=price)
-        assert num_of_items + 1 == len(await ShopService.find_all_items(SortItems()))
-    except IntegrityError:
-        assert is_added is False
+    num_of_items = len(await ShopService.find_all_items(SortItems()))
+    await ShopService.add(title=title, description=description, price=price)
+    num_of_items = num_of_items + 1 if is_added else num_of_items
+    assert num_of_items == len(await ShopService.find_all_items(SortItems()))
 
 
 @pytest.mark.parametrize(

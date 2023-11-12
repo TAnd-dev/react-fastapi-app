@@ -29,10 +29,7 @@ async def test_find_all_reviews(item_id, is_exists):
 )
 async def test_add_review(item_id, user_id, text, rate):
     current_count = len(await ReviewService.find_all_reviews(item_id))
-    try:
-        await ReviewService.add(item_id=item_id, user_id=user_id, text=text, rate=rate)
-        current_count += 1
-    except Exception:
-        pass
+    new_review = await ReviewService.add(item_id=item_id, user_id=user_id, text=text, rate=rate)
+    current_count = current_count + 1 if new_review else current_count
     reviews = await ReviewService.find_all_reviews(item_id)
     assert len(reviews) == current_count

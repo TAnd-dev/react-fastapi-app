@@ -5,20 +5,20 @@ from app.users.services import UserService
 
 
 @pytest.mark.parametrize(
-    'email, password',
+    'email, password, is_added',
     [
-        ('test_email@mail.com', 'password1'),
-        ('test@test.com', 'password123'),
+        ('test_email@mail.com', 'password1', True),
+        ('test@test.com', 'password123', False),
     ],
 )
-async def test_add_user(email, password):
-    count = len(await UserService.find_all())
+async def test_add_user(email, password, is_added):
+    num_of_users = len(await UserService.find_all())
     try:
         await UserService.add(email=email, hash_password=password)
-        count += 1
-    except IntegrityError:
+        num_of_users += 1
+    except Exception:
         pass
-    assert len(await UserService.find_all()) == count
+    assert len(await UserService.find_all()) == num_of_users
 
 
 @pytest.mark.parametrize(

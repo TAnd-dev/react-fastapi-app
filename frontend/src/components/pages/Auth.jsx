@@ -42,9 +42,11 @@ function Login() {
             credentials: 'include',
             body: formJson,
         });
-        if (request.ok) {
-            navigate('/', { replace: true });
+        if (request.status === 409) {
+            setError('Incorrect login or password');
+            return;
         }
+        navigate('/', { repalce: true });
     }
 
     return (
@@ -159,9 +161,11 @@ function Reg() {
             credentials: 'include',
             body: formJson,
         });
-        if (request.ok) {
-            navigate('/', { repalce: true });
+        if (request.status === 409) {
+            setError('Email is already exists');
+            return;
         }
+        navigate('/', { repalce: true });
     }
     return (
         <Form

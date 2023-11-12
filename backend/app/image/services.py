@@ -4,9 +4,11 @@ from datetime import datetime
 import aiofiles
 from fastapi import UploadFile
 from sqlalchemy import delete, insert
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.database import async_session_maker
 from app.image.models import Images
+from app.logger import logger
 from app.services.base_services import BaseService
 from app.shop.models import item_image
 from app.users.services import UserService
@@ -25,6 +27,13 @@ class ImageService(BaseService):
                 content = await file.read()
                 await save_file.write(content)
         except Exception:
+            msg = 'Unknown Exc. Cannot save image'
+            extra = {
+                'user_id': user_id,
+                'item_id': item_id,
+                'file_name': file_name,
+            }
+            logger.error(msg, extra=extra, exc_info=True)
             return None
 
         photo_id = (
@@ -41,25 +50,47 @@ class ImageService(BaseService):
 
     @classmethod
     async def load_image_for_item(cls, **values):
-        async with async_session_maker() as session:
-            query = insert(item_image).values(**values)
-            await session.execute(query)
-            await session.commit()
+        try:
+            async with async_session_maker() as session:
+                query = insert(item_image).values(**values)
+                await session.execute(query)
+                await session.commit()
+        except (SQLAlchemyError, Exception) as e:
+            msg = 'Database' if isinstance(e, SQLAlchemyError) else 'Unknown'
+            msg += ' Exc. Cannot load image for item'
+            logger.error(msg, exc_info=True)
 
     @classmethod
     async def delete_image_by_item_id(cls, item_id):
-        async with async_session_maker() as session:
-            query = (
-                delete(item_image)
-                .where(item_image.c.item_id == item_id)
-                .returning(item_image.c.image_id)
-            )
-            image_ids = await session.execute(query)
-            for image_id in image_ids.scalars().all():
-                query = delete(cls.model).where(cls.model.id == image_id)
-                await session.execute(query)
-            await session.commit()
+        try:
+            async with async_session_maker() as session:
+                query = (
+                    delete(item_image)
+                    .where(item_image.c.item_id == item_id)
+                    .returning(item_image.c.image_id)
+                )
+                image_ids = await session.execute(query)
+                for image_id in image_ids.scalars().all():
+                    query = delete(cls.model).where(cls.model.id == image_id)
+                    await session.execute(query)
+                await session.commit()
 
-        for file in os.listdir('app/static/img/items'):
-            if file.startswith(f'{item_id}--'):
-                os.remove(f'app/static/img/items/{file}')
+        except (SQLAlchemyError, Exception) as e:
+            msg = 'Database' if isinstance(e, SQLAlchemyError) else 'Unknown'
+            msg += ' Exc. Cannot delete image by item id'
+            extra = {
+                'item_id': item_id,
+            }
+            logger.error(msg, extra=extra, exc_info=True)
+
+        try:
+            for file in os.listdir('app/static/img/items'):
+                if file.startswith(f'{item_id}--'):
+                    os.remove(f'app/static/img/items/{file}')
+
+        except Exception:
+            msg = 'Unknown Exc. Cannot remove image'
+            extra = {
+                'item_id': item_id,
+            }
+            logger.error(msg, extra=extra, exc_info=True)

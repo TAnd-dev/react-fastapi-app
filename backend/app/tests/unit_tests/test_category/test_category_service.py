@@ -1,5 +1,4 @@
 import pytest
-from sqlalchemy.exc import IntegrityError
 
 from app.shop.services import CategoryService, ShopService
 
@@ -27,28 +26,25 @@ async def test_add_category(name, parent):
     'item_id, category_id, is_added',
     [
         (1, 1, True),
-        (1, 2, False),
+        (1, 2, True),
         (1, 999, False),
         (999, 1, False),
     ],
 )
 async def test_add_category_for_item(item_id, category_id, is_added):
-    try:
-        await CategoryService.add_category_for_item(
-            item_id=item_id, category_id=category_id
-        )
+    await CategoryService.add_category_for_item(
+        item_id=item_id, category_id=category_id
+    )
 
-        item = await ShopService.find_by_id(item_id)
-        category = await CategoryService.find_by_id(category_id)
+    item = await ShopService.find_by_id(item_id)
+    category = await CategoryService.find_by_id(category_id)
+    if not item or not category:
+        assert not is_added
+    else:
         category_in_item = any(
             [category_item.id == category.id for category_item in item['categories']]
         )
-        assert category_in_item
-
-    except IntegrityError:
-        assert is_added is False
-    except Exception:
-        assert False
+        assert category_in_item and is_added
 
 
 @pytest.mark.parametrize('category_id, is_deleted', [

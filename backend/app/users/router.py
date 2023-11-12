@@ -18,11 +18,8 @@ router = APIRouter(prefix='/user', tags=['User'])
 
 @router.post('/auth/register')
 async def register_user(response: Response, user_data: SUserReg):
-    existing_user = await UserService.find_one_or_none(email=user_data.email)
     if user_data.password1 != user_data.password2:
         raise PasswordMissmatchException()
-    if existing_user:
-        raise UserAlreadyExistsException()
     hashed_password = get_password_hash(user_data.password1)
     user_id = await UserService.add(
         email=user_data.email, hash_password=hashed_password
@@ -54,7 +51,7 @@ async def get_user_profile(user: Users = Depends(current_user)) -> SUserProfile:
 
 @router.patch('/profile')
 async def change_user_profile(
-    profile_data: SBriefUserProfile, user: Users = Depends(current_user)
+        profile_data: SBriefUserProfile, user: Users = Depends(current_user)
 ) -> SUserProfile:
     await UserService.update_user_profile(
         user_id=user.id,
