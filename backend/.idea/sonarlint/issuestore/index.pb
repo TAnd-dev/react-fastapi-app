@@ -155,3 +155,8 @@ k
 example.env,e\9\e92aa7821f38c420fef629d6a96223b078610d40
 g
 7app/migrations/versions/dd37cb060a5c_create_database.py,4\e\4e140353f15936c025cf1853e3501d8ed8a0b5e4
+@
+app/load_data.py,8\4\84a0e06f76e4db50cfd10d5c8d3ad5db0dcedfdc
+:
+
+Dockerfile,6\6\6651ddff6eb82c840ced7c1dddee15c6e1913dd4

@@ -51,3 +51,13 @@ class UserIsNotAdmin(DefaultException):
 class NoSuchCategory(DefaultException):
     status_code = status.HTTP_404_NOT_FOUND
     detail = 'No such category'
+
+
+class InvalidFile(DefaultException):
+    status_code = status.HTTP_409_CONFLICT
+    detail = 'Invalid file'
+
+
+class InvalidFile(DefaultException):
+    status_code = status.HTTP_409_CONFLICT
+    detail = 'Invalid file'

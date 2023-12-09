@@ -1,0 +1,58 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:16
+    container_name: app_db
+    env_file:
+      - .env-non-dev
+    ports:
+      - 5433:5432
+
+  redis:
+    image: redis:7
+    container_name: app_redis
+
+  backend:
+    build: 
+      context: backend
+    container_name: app_backend
+    env_file:
+      - .env-non-dev
+    depends_on:
+      - db
+      - redis
+    command: ["/backend/docker/app.sh"]
+    ports:
+      - 8000:8000
+  
+  celery:
+    build:
+      context: backend
+    container_name: app_celery
+    command: ["/backend/docker/celery.sh", "celery"]    
+    env_file:
+      - .env-non-dev
+    depends_on:
+      - redis
+  
+  flower:
+    build:
+      context: backend
+    container_name: app_flower
+    command: ["/backend/docker/celery.sh", "flower"]    
+    env_file:
+      - .env-non-dev
+    ports:
+      - 5555:5555
+    depends_on:
+      - redis
+
+    
+  frontend:
+    build:
+      context: frontend
+    container_name: app_frontend
+    ports:
+      - 30:3000
+    depends_on:
+      - backend

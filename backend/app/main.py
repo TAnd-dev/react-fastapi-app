@@ -17,6 +17,7 @@ from app.cart.router import router as card_router
 from app.config import settings
 from app.database import engine
 from app.favorite.router import router as favorite_router
+from app.load_data import add_default_photo, create_super_user
 from app.purchase.router import router as purchase_router
 from app.shop.router import router as shop_router
 from app.users.router import router as user_router
@@ -37,8 +38,8 @@ sentry_sdk.init(
 
 origins = [
     'http://localhost:3000',
-    'http://localhost:7304',
-    'http://127.0.0.1:7304',
+    'http://localhost:2437',
+    'http://127.0.0.1:2437',
     'http://127.0.0.1:3000',
 ]
 
@@ -61,9 +62,11 @@ add_pagination(app)
 
 
 @app.on_event("startup")
-def startup():
+async def startup():
     redis = aioredis.from_url(f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}")
     FastAPICache.init(RedisBackend(redis), prefix="cache")
+    await add_default_photo()
+    await create_super_user()
 
 
 admin = Admin(app, engine, authentication_backend=authentication_backend)
