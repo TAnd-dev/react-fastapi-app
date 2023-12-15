@@ -5,6 +5,8 @@ import { Label } from '../comps/Label';
 import { CrossButton, OrangeButton } from '../comps/Button';
 import { host } from '../../settings';
 
+const { ModalContainer, Form, LabelInput, InputLabelFile, SectionHeader } = css;
+
 export default function AddProduct({ handleCloseModal, isOpen = false }) {
     const [addItem, setAddItem] = useState({
         title: '',
@@ -14,8 +16,8 @@ export default function AddProduct({ handleCloseModal, isOpen = false }) {
         photos: [],
     });
     const [categories, setCategories] = useState([]);
-    const { ModalContainer, Form, LabelInput, InputLabelFile, SectionHeader } =
-        css;
+    const [isLoading, setIsLoadin] = useState(true);
+    const [error, setError] = useState(null);
 
     function addDeleteCategory(e) {
         const newCategories = addItem.categories.includes(e.target.id)
@@ -27,10 +29,18 @@ export default function AddProduct({ handleCloseModal, isOpen = false }) {
 
     useEffect(() => {
         async function fetchCategories() {
-            const request = await fetch(`${host}shop/categories`);
-            if (request.ok) {
-                const data = await request.json();
-                setCategories(data);
+            try {
+                const request = await fetch(`${host}shop/categories`);
+                if (request.ok) {
+                    const data = await request.json();
+                    setCategories(data);
+                } else {
+                    setError('Failed to fetch categories');
+                }
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setIsLoadin(false);
             }
         }
         fetchCategories();
@@ -87,6 +97,8 @@ export default function AddProduct({ handleCloseModal, isOpen = false }) {
     }
     return (
         <ModalContainer style={{ display: `${isOpen ? 'flex' : 'none'}` }}>
+            {isLoading && <div>Loading...</div>}
+            {error && <div>{error}</div>}
             <Form
                 encType="multipart/form-data"
                 style={{ flexDirection: 'row', flexWrap: 'wrap' }}
@@ -95,10 +107,10 @@ export default function AddProduct({ handleCloseModal, isOpen = false }) {
                     Add product
                     <CrossButton onClick={() => handleCloseModal('')} />
                 </SectionHeader>
-                <Label width="20%" text="Categoies" />
-                <div style={{ width: '80%' }}>{categoyList}</div>
+                <Label width="25%" text="Categoies" />
+                <div style={{ width: '75%' }}>{categoyList}</div>
                 <LabelInput>
-                    <Label width="20%" text="Name" htmlFor={'title'} />
+                    <Label width="25%" text="Name" htmlFor={'title'} />
                     <Input
                         id="title"
                         onHandle={e =>
@@ -107,13 +119,13 @@ export default function AddProduct({ handleCloseModal, isOpen = false }) {
                         value={addItem.title}
                         type="text"
                         placeholder="Name"
-                        width="80%"
+                        width="75%"
                     ></Input>
                 </LabelInput>
                 <LabelInput>
                     <Label
                         htmlFor={'description'}
-                        width="20%"
+                        width="25%"
                         text="Description"
                     />
                     <TextArea
@@ -126,11 +138,11 @@ export default function AddProduct({ handleCloseModal, isOpen = false }) {
                         }
                         text={addItem.description}
                         placeholder="Description"
-                        style={{ minWidth: '80%' }}
+                        style={{ minWidth: '75%' }}
                     />
                 </LabelInput>
                 <LabelInput>
-                    <Label htmlFor={'price'} width="20%" text="Price" />
+                    <Label htmlFor={'price'} width="25%" text="Price" />
                     <Input
                         id={'price'}
                         onHandle={e =>
@@ -139,10 +151,10 @@ export default function AddProduct({ handleCloseModal, isOpen = false }) {
                         value={addItem.price}
                         type="number"
                         placeholder="Price"
-                        width="80%"
+                        width="75%"
                     />
                 </LabelInput>
-                <Label width="20%" text="Photos" />
+                <Label width="25%" text="Photos" />
                 <InputLabelFile.FilesContainer>
                     <InputLabelFile.InputFile
                         type="file"

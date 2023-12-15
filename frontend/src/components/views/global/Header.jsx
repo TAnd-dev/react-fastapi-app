@@ -33,9 +33,12 @@ const {
     HeaderSearch: HeaderSearchStyle,
     HeaderSearchInput,
     HeaderSearchBtn,
+    HeaderNav: HeaderNavStyle,
     NavBtn,
     HeaderBtnLink,
     SearchResult,
+    ContainerLogin,
+    BlackOrangeLink,
 } = css;
 
 function HeaderLogo({ handleClick, isOpenCategory }) {
@@ -72,13 +75,16 @@ function HeaderSearch() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const { BlackOrangeLink } = css;
-
     const briefItemsList = briefItems.map(item => {
         return (
             <Link key={item.id} to={`/item/${item.id}`} relative="path">
                 <BlackOrangeLink
-                    style={{ display: 'flex', width: '100%', margin: '10px 0' }}
+                    style={{
+                        display: 'flex',
+                        width: '100%',
+                        margin: '10px 0',
+                        paddingRight: '20px',
+                    }}
                 >
                     <span style={{ width: '90%' }}>
                         {item.title.length > 50
@@ -157,8 +163,6 @@ function HeaderNav() {
     const photo =
         photoName && userData.photo.replace(photoName, 'small_' + photoName);
 
-    const { ContainerLogin, BlackOrangeLink } = css;
-
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -226,7 +230,7 @@ function HeaderNav() {
     }
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <HeaderNavStyle>
             <HeaderNavBtn
                 link="/favorite"
                 linkText="Favorite"
@@ -283,7 +287,7 @@ function HeaderNav() {
                     </ContainerLogin>
                 )}
             </div>
-        </div>
+        </HeaderNavStyle>
     );
 }
 

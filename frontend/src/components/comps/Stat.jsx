@@ -2,9 +2,8 @@ import css from '../../styles/styles';
 import { Rating } from '@mui/material';
 import { BorderSpan } from './Span';
 
-export default function ItemStat({ itemId, avgRating, countReviews }) {
-    const { ItemListDetailStat } = css;
-
+const { ItemListDetailStat } = css;
+export default function ItemStat({ avgRating, countReviews }) {
     return (
         <ItemListDetailStat>
             <BorderSpan style={{ marginRight: '15px' }}>

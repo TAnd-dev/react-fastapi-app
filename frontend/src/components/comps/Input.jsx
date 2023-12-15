@@ -1,5 +1,7 @@
 import css from '../../styles/styles';
 
+const { Input: InputStyle, TextArea: TextAreaStyle } = css;
+
 export function RadioInput({ id, value, name, onHandle }) {
     return (
         <input
@@ -35,7 +37,6 @@ export function Input({
     placeholder = '',
     onHandle,
 }) {
-    const { Input: InputStyle } = css;
     return (
         <InputStyle
             id={id}
@@ -50,7 +51,6 @@ export function Input({
 }
 
 export function TextArea({ onChange, text, style }) {
-    const { TextArea: TextAreaStyle } = css;
     return (
         <TextAreaStyle
             style={style}

@@ -7,13 +7,19 @@ import { Input } from '../comps/Input';
 import css from '../../styles/styles';
 import { host } from '../../settings.js';
 
+const {
+    Profile: ProfileStyles,
+    Main,
+    SectionWrapper,
+    InputLabelFile,
+    FormFile,
+} = css;
+
 function ShowChangeProfile({
     profileData,
     changeProfileData,
     type = 'changeProfile',
 }) {
-    const { Profile: ProfileStyles } = css;
-
     return (
         <ProfileStyles.SectionDetail $sectionWidth="60%">
             <ProfileStyles.ProfileDetail $detailWidth="50%">
@@ -94,12 +100,6 @@ export default function Profile() {
     const userData = useSelector(state => state.userData.userData);
     const dispatch = useDispatch();
     const [typeProfile, setTypeProfile] = useState('profile');
-    const {
-        Main,
-        Profile: ProfileStyles,
-        SectionWrapper,
-        InputLabelFile,
-    } = css;
 
     useEffect(() => {
         setProfileData({ ...userData });
@@ -183,7 +183,7 @@ export default function Profile() {
                     }}
                     $sectionWidth="100%"
                 >
-                    <form encType="multipart/form-data">
+                    <FormFile encType="multipart/form-data">
                         <InputLabelFile.InputFile
                             type="file"
                             onChange={fetchProfilePhoto}
@@ -193,8 +193,8 @@ export default function Profile() {
                         <InputLabelFile.Label htmlFor="input__file">
                             Change photo
                         </InputLabelFile.Label>
-                    </form>
-                    <div style={{ width: '250px', display: 'flex' }}>
+                    </FormFile>
+                    <ProfileStyles.ContainerBtns>
                         <OrangeButton
                             text={
                                 typeProfile === 'profile'
@@ -221,7 +221,7 @@ export default function Profile() {
                                     : setTypeProfile('profile');
                             }}
                         />
-                    </div>
+                    </ProfileStyles.ContainerBtns>
                 </ProfileStyles.SectionDetail>
             </SectionWrapper>
         </Main>

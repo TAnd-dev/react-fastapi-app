@@ -1,3 +1,6 @@
+import css from '../../styles/styles';
+
+const { Label: LabelStyle } = css;
 export function Label({
     htmlFor,
     text,
@@ -6,16 +9,13 @@ export function Label({
     marginBottom = '10px',
 }) {
     return (
-        <label
+        <LabelStyle
             htmlFor={htmlFor}
-            style={{
-                width: width,
-                marginBottom: marginBottom,
-                cursor: 'pointer',
-                textAlign: textAlign,
-            }}
+            $width={width}
+            $marginBottom={marginBottom}
+            $textAlign={textAlign}
         >
             {text}
-        </label>
+        </LabelStyle>
     );
 }

@@ -1,13 +1,13 @@
 import css from '../../styles/styles';
 
-const { Btn } = css;
+const { Btn, CrossButton: CrossButtonStyle } = css;
 
-export function OrangeButton({ text, width = '80%', onClick }) {
+function Button({ color, hover, text, width = '80%', style = {}, onClick }) {
     return (
         <Btn.DefaultBtn
-            $btnColor="linear-gradient(0deg, #fc8507 0%, #ffa218 100%)"
-            $btnHoverColor="#fc8507"
-            style={{ width: width }}
+            $btnColor={color}
+            $btnHoverColor={hover}
+            style={{ width: width, ...style }}
             onClick={onClick}
         >
             {text}
@@ -15,16 +15,39 @@ export function OrangeButton({ text, width = '80%', onClick }) {
     );
 }
 
+export function OrangeButton({ text, width = '80%', onClick }) {
+    return (
+        <Button
+            color="linear-gradient(0deg, #fc8507 0%, #ffa218 100%)"
+            hover="#fc8507"
+            text={text}
+            width={width}
+            onClick={onClick}
+        />
+    );
+}
+
 export function GreyButton({ text, width = '80%', onClick }) {
     return (
-        <Btn.DefaultBtn
-            $btnColor="linear-gradient(0deg, #b4b4b4 0%, #d1d1d1 100%)"
-            $btnHoverColor="#b4b4b4"
-            style={{ width: width }}
+        <Button
+            color="linear-gradient(0deg, #b4b4b4 0%, #d1d1d1 100%)"
+            hover="#b4b4b4"
+            width={width}
             onClick={onClick}
-        >
-            {text}
-        </Btn.DefaultBtn>
+            text={text}
+        />
+    );
+}
+
+export function RedButton({ text, width = '80%', onClick }) {
+    return (
+        <Button
+            color="linear-gradient(0deg, #fc0707 0%, #ff7e18 100%)"
+            hover="#f50000"
+            width={width}
+            onClick={onClick}
+            text={text}
+        />
     );
 }
 
@@ -41,21 +64,7 @@ export function WhiteButton({
     );
 }
 
-export function RedButton({ text, width = '80%', onClick }) {
-    return (
-        <Btn.DefaultBtn
-            $btnColor="linear-gradient(0deg, #fc0707 0%, #ff7e18 100%)"
-            $btnHoverColor="#f50000"
-            style={{ width: width }}
-            onClick={onClick}
-        >
-            {text}
-        </Btn.DefaultBtn>
-    );
-}
-
 export function CrossButton({ onClick, size = '30px', id = null }) {
-    const { CrossButton: CrossButtonStyle } = css;
     return (
         <CrossButtonStyle id={id} onClick={onClick} size={size}>
             X

@@ -5,9 +5,10 @@ import { Input } from '../comps/Input';
 import { Label } from '../comps/Label';
 import { host } from '../../settings';
 
+const { ModalContainer, Form, SectionHeader, LabelInput } = css;
+
 export default function DeleteProduct({ handleCloseModal, isOpen = false }) {
     const [idProuct, setIdProduct] = useState('');
-    const { ModalContainer, Form, SectionHeader, LabelInput } = css;
 
     async function onClickDelete(e) {
         e.preventDefault();

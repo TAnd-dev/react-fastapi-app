@@ -8,12 +8,14 @@ import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeUserData } from '../../redux-store/reducers/view-user-data';
 
+const { CartFavoritePurchase, SectionHeader, BlackOrangeLink, SeparateLine } =
+    css;
+
 export default function Favorite() {
     const [items, setItems] = useState([]);
     const [cookies, setCookies] = useCookies();
     const userData = useSelector(state => state.userData.userData);
     const dispatch = useDispatch();
-    const { CartFavoritePurchase, SectionHeader, BlackOrangeLink } = css;
 
     async function deleteItem(e) {
         const deleteId = +e.target.id;
@@ -61,34 +63,33 @@ export default function Favorite() {
     }, [userData.email, cookies.favorite]);
 
     const itemList = [
-        <CartFavoritePurchase.ItemDetail key={0}>
-            <b style={{ width: '59%' }}>Name</b>
-            <b style={{ width: '13%', paddingLeft: '30px' }}>Price</b>
-            <span style={{ width: '5%' }}></span>
-        </CartFavoritePurchase.ItemDetail>,
+        <>
+            <b style={{ gridColumnStart: '1' }}>Name</b>
+            <b style={{ gridColumnStart: '8' }}>Price</b>
+        </>,
     ];
 
     items.forEach(item => {
         itemList.push(
-            <CartFavoritePurchase.ItemDetail
-                key={item.item_id}
-                $styleLast={false}
-            >
-                <span style={{ width: '58%' }}>
+            <>
+                <SeparateLine
+                    style={{ gridColumn: '1/12', marginRight: '19px' }}
+                />
+                <span style={{ gridColumnStart: '1' }}>
                     <Link to={`/item/${item.item_id}`} relative="path">
                         <BlackOrangeLink>{item.title}</BlackOrangeLink>
                     </Link>
                 </span>
 
-                <span style={{ width: '16%', paddingLeft: '30px' }}>
-                    {item.price}$
+                <span style={{ gridColumnStart: '8' }}>{item.price}$</span>
+                <span style={{ gridColumnStart: '11' }}>
+                    <CrossButton
+                        id={item.item_id}
+                        onClick={deleteItem}
+                        size="20px"
+                    ></CrossButton>
                 </span>
-                <CrossButton
-                    id={item.item_id}
-                    onClick={deleteItem}
-                    size="20px"
-                ></CrossButton>
-            </CartFavoritePurchase.ItemDetail>
+            </>
         );
     });
 

@@ -16,14 +16,16 @@ import {
     isValidPass,
 } from '../../services/validators';
 
+const { LabelInput, Form, Main } = css;
+
 function Login() {
     const [userData, setUserData] = useState({ email: '', password: '' });
     const [error, setError] = useState(null);
-    const { LabelInput, Form } = css;
     const navigate = useNavigate();
 
     async function handleFormSubmit(event) {
         event.preventDefault();
+
         if (!isValidEmail(userData.email)) {
             setError('Email is invalid');
             return;
@@ -63,7 +65,7 @@ function Login() {
                 <Label
                     htmlFor="login-user"
                     text="Email"
-                    width="20%"
+                    width="25%"
                     textAlign="center"
                 />
                 <Input
@@ -85,7 +87,7 @@ function Login() {
                 <Label
                     htmlFor="password-login-user"
                     text="Password"
-                    width="20%"
+                    width="25%"
                     textAlign="center"
                 />
                 <Input
@@ -136,7 +138,6 @@ function Reg() {
     });
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const { LabelInput, Form } = css;
 
     async function handleFormSubmit(event) {
         event.preventDefault();
@@ -177,7 +178,7 @@ function Reg() {
                 <Label
                     htmlFor="email"
                     text="Email"
-                    width="20%"
+                    width="25%"
                     textAlign="center"
                 />
                 <Input
@@ -203,7 +204,7 @@ function Reg() {
                 <Label
                     htmlFor="password1"
                     text="Password"
-                    width="20%"
+                    width="25%"
                     textAlign="center"
                 />
                 <Input
@@ -229,7 +230,7 @@ function Reg() {
                 <Label
                     htmlFor="password2"
                     text="Confirm password"
-                    width="20%"
+                    width="25%"
                     textAlign="center"
                 />
                 <Input
@@ -291,8 +292,6 @@ function Reg() {
 }
 
 export default function LoginRegister({ type }) {
-    const { Main } = css;
-
     return (
         <Main style={{ margin: '100px 0' }}>
             <h2

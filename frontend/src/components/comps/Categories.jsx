@@ -4,11 +4,12 @@ import css from '../../styles/styles';
 import { ArrowIcon } from './Icons';
 import { host } from '../../settings';
 
+const { BlackOrangeLink, Categories: CategoryStyle } = css;
+
 function CategoryTree({ category, categories, onToggle, openCategories }) {
     const [isOpen, setIsOpen] = useState(false);
 
     const filteredCategories = categories.filter(c => c.parent === category.id);
-    const { BlackOrangeLink, Categories: CategoryStyle } = css;
 
     const handleCategoryClick = () => {
         setIsOpen(!isOpen);
@@ -58,15 +59,23 @@ function CategoryTree({ category, categories, onToggle, openCategories }) {
 export default function Categories() {
     const [categories, setCategories] = useState([]);
     const [openCategories, setOpenCategories] = useState([]);
-
-    const { Categories: CategoryStyle } = css;
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const request = await fetch(`${host}shop/categories`);
-            if (request.ok) {
-                const data = await request.json();
-                setCategories(data);
+            try {
+                const request = await fetch(`${host}shop/categories`);
+                if (request.ok) {
+                    const data = await request.json();
+                    setCategories(data);
+                } else {
+                    throw new Error('Failed to fetch categories');
+                }
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchCategories();
@@ -84,6 +93,8 @@ export default function Categories() {
 
     return (
         <CategoryStyle.CategoryContainer>
+            {isLoading && <div>Loading...</div>}
+            {error && <div>{error}</div>}
             <ul style={{ width: '100%' }}>
                 {rootCategories.map(rootCategory => (
                     <CategoryTree

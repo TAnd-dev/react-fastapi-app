@@ -50,7 +50,7 @@ function Sidebar() {
     }
 
     return (
-        <div style={{ width: '20%' }}>
+        <ItemListStyles.Sidebar>
             <Form
                 style={{ position: 'stucky', top: '105px', left: '0' }}
                 onSubmit={submitSortForm}
@@ -115,7 +115,7 @@ function Sidebar() {
                 </ItemListStyles.TypeSort>
                 <OrangeButton text="Apply" />
             </Form>
-        </div>
+        </ItemListStyles.Sidebar>
     );
 }
 
@@ -144,7 +144,11 @@ function ItemList() {
             }?${searchTextParam}size=15`
         )
             .then(res => res.json())
-            .then(result => setItemsPage(result));
+            .then(result => {
+                result.items
+                    ? setItemsPage(result)
+                    : setItemsPage({ items: [] });
+            });
     }, [searchParams, categroyId]);
 
     useEffect(() => {
@@ -226,7 +230,9 @@ function ItemList() {
     });
     return (
         <>
-            <div style={{ width: '70%' }}>{itemList}</div>
+            <ItemListStyles.ItemsContainer>
+                {itemList}
+            </ItemListStyles.ItemsContainer>
             {itemsPage.page && (
                 <Pagination
                     page={itemsPage.page}
@@ -357,13 +363,14 @@ function ItemListDetail({
                     </Link>
                 </div>
                 <ItemStat
-                    itemId={itemDetail.id}
                     avgRating={itemDetail.avg_rate}
                     countReviews={itemDetail.count_reviews}
                 />
             </ItemListStyles.ItemListDetailCenter>
             <ItemListStyles.ItemListDetailRight>
-                <h2 style={{ width: '100%' }}>{itemDetail.price} $</h2>
+                <ItemListStyles.ItemPrice>
+                    {itemDetail.price} $
+                </ItemListStyles.ItemPrice>
                 <WhiteButton
                     style={{ width: '40px' }}
                     onClick={onClickFavorite}

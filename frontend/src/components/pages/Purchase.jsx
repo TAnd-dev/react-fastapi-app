@@ -4,10 +4,12 @@ import css from '../../styles/styles';
 import { useSelector } from 'react-redux';
 import { host } from '../../settings';
 
+const { CartFavoritePurchase, SectionHeader, BlackOrangeLink, SeparateLine } =
+    css;
+
 export default function Purchase() {
     const [items, setItems] = useState([]);
     const userData = useSelector(state => state.userData.userData);
-    const { CartFavoritePurchase, SectionHeader, BlackOrangeLink } = css;
 
     useEffect(() => {
         if (!userData.email) {
@@ -25,30 +27,29 @@ export default function Purchase() {
     }, [userData.email]);
 
     const itemList = [
-        <CartFavoritePurchase.ItemDetail key={0}>
-            <b style={{ width: '58%' }}>Name</b>
-            <b style={{ width: '5%' }}>Count</b>
-            <b style={{ width: '16%', paddingLeft: '30px' }}>Price</b>
-        </CartFavoritePurchase.ItemDetail>,
+        <>
+            <b style={{ gridColumnStart: '1' }}>Name</b>
+            <b style={{ gridColumnStart: '6' }}>Count</b>
+            <b style={{ gridColumnStart: '8' }}>Price</b>
+        </>,
     ];
 
     items.forEach((item, i) => {
         itemList.push(
-            <CartFavoritePurchase.ItemDetail key={i + 1} $styleLast={false}>
-                <span style={{ width: '58%' }}>
+            <>
+                <SeparateLine
+                    style={{ gridColumn: '1/12', marginRight: '19px' }}
+                />
+                <span style={{ gridColumnStart: '1' }}>
                     <Link to={`/item/${item.item_id}`} relative="path">
                         <BlackOrangeLink>{item.title}</BlackOrangeLink>
                     </Link>
                 </span>
 
-                <span style={{ width: '5%', paddingLeft: '10px' }}>
-                    {item.count}
-                </span>
+                <span style={{ gridColumnStart: '6' }}>{item.count}</span>
 
-                <span style={{ width: '16%', paddingLeft: '30px' }}>
-                    {item.price}$
-                </span>
-            </CartFavoritePurchase.ItemDetail>
+                <span style={{ gridColumnStart: '8' }}>{item.price}$</span>
+            </>
         );
     });
 

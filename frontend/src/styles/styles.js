@@ -16,6 +16,11 @@ const css = {
         justify-content: space-around;
         align-items: center;
         height: 80px;
+
+        @media (max-width: 700px) {
+            gap: 10px;
+            padding: 0 10px;
+        }
     `,
     HeaderLogo: styled.div`
         display: flex;
@@ -26,6 +31,11 @@ const css = {
         height: 64px;
         background: linear-gradient(0deg, #fc8507 0%, #ffa218 100%);
         border-radius: 10px;
+
+        @media (max-width: 700px) {
+            width: auto;
+            padding: 0 5px;
+        }
     `,
     ContainerLogo: styled.div`
         display: flex;
@@ -79,6 +89,10 @@ const css = {
         border-radius: 8px;
         cursor: text;
         transition: all 0.2s;
+
+        @media (max-width: 700px) {
+            width: auto;
+        }
     `,
     HeaderSearchInput: styled.input`
         background-color: #f0efef;
@@ -91,6 +105,10 @@ const css = {
         font-weight: 400;
         outline: none;
         transition: all 0.2s;
+
+        @media (max-width: 700px) {
+            width: 80%;
+        }
     `,
     HeaderSearchBtn: styled.span`
         display: flex;
@@ -99,6 +117,10 @@ const css = {
         height: 50px;
         width: 10%;
         cursor: pointer;
+
+        @media (max-width: 700px) {
+            width: 20%;
+        }
     `,
     NavBtn: styled.div`
         width: 88.5px;
@@ -107,6 +129,20 @@ const css = {
         transition: all 0.2s;
         cursor: pointer;
     `,
+    HeaderNav: styled.div`
+        display: flex;
+        align-items: center;
+
+        @media (max-width: 700px) {
+            position: fixed;
+            bottom: 0;
+            background-color: #f0efef;
+            width: 100%;
+            justify-content: space-evenly;
+            box-shadow: 1px 0 3px 2px #f0efef;
+        }
+    `,
+
     HeaderBtnLink: styled.span`
         display: flex;
         flex-direction: column;
@@ -129,6 +165,11 @@ const css = {
         background-color: white;
         border: 1px solid rgb(207, 207, 207);
         border-radius: 10px;
+
+        @media (max-width: 700px) {
+            top: auto;
+            bottom: 70px;
+        }
     `,
     SearchResult: styled.div`
         position: fixed;
@@ -140,6 +181,10 @@ const css = {
         padding: 10px;
         border-radius: 5px;
         margin-left: 10px;
+
+        @media (max-width: 700px) {
+            width: 80%;
+        }
     `,
     CountItems: styled.div`
         position: fixed;
@@ -154,6 +199,11 @@ const css = {
         background-color: orange;
         color: white;
         font-size: 12px;
+
+        @media (max-width: 700px) {
+            bottom: 32px;
+            top: auto;
+        }
     `,
 
     Footer: {
@@ -179,10 +229,25 @@ const css = {
             flex-wrap: wrap;
             justify-content: space-evenly;
         `,
+        Sidebar: styled.div`
+            width: 20%;
+
+            @media (max-width: 1000px) {
+                width: auto;
+                margin-bottom: 20px;
+            }
+        `,
         SidebarCaption: styled.h4`
             width: 100%;
             margin-left: 15px;
             margin-bottom: 10px;
+        `,
+        ItemsContainer: styled.div`
+            width: 70%;
+
+            @media (max-width: 1000px) {
+                width: 95%;
+            }
         `,
         ItemListDetail: styled.div`
             background-color: white;
@@ -190,10 +255,19 @@ const css = {
             border: 1px solid rgb(207, 207, 207);
             border-radius: 10px;
             padding: 15px 5px;
+
+            @media (max-width: 700px) {
+                flex-direction: column;
+                align-items: stretch;
+            }
         `,
         ItemListDetailLeft: styled.div`
             width: 30%;
             text-align: center;
+
+            @media (max-width: 700px) {
+                width: auto;
+            }
         `,
         ItemListDetailImg: styled.img`
             width: auto;
@@ -206,6 +280,11 @@ const css = {
             justify-content: space-between;
             width: 65%;
             padding: 10px 0;
+
+            @media (max-width: 700px) {
+                align-items: center;
+                width: auto;
+            }
         `,
         ItemListDetailRight: styled.div`
             display: flex;
@@ -215,6 +294,17 @@ const css = {
             width: 15%;
             padding: 10px 0;
             text-align: center;
+
+            @media (max-width: 700px) {
+                width: auto;
+            }
+        `,
+        ItemPrice: styled.h2`
+            width: 100%;
+
+            @media (max-width: 700px) {
+                width: auto;
+            }
         `,
     },
     ItemDetail: {
@@ -223,6 +313,10 @@ const css = {
             justify-content: center;
             text-align: ${props => props.textAlign};
             width: 50%;
+
+            @media (max-width: 700px) {
+                width: 100%;
+            }
         `,
         ItemDetailImage: styled.img`
             width: auto;
@@ -234,6 +328,19 @@ const css = {
             flex-direction: column;
             justify-content: space-between;
             align-items: end;
+
+            @media (max-width: 700px) {
+                align-items: center;
+                margin-top: 30px;
+            }
+        `,
+        ItemImage: styled.div`
+            height: 400px;
+            width: 80%;
+
+            @media (max-width: 700px) {
+                height: 300px;
+            }
         `,
         ItemDetailBuy: styled.div`
             display: flex;
@@ -253,11 +360,33 @@ const css = {
             padding: 15px;
             border-radius: 15px;
         `,
+        ItemStatContainer: styled.div`
+            align-self: start;
+            margin-top: -50px;
+
+            @media (max-width: 700px) {
+                margin-top: 0;
+                margin-bottom: 10px;
+            }
+        `,
         ItemRating: styled.div`
             display: flex;
             justify-content: center;
             flex-direction: column;
             gap: 10px;
+
+            @media (max-width: 700px) {
+                width: 100%;
+                align-items: center;
+            }
+        `,
+        ReviewContainer: styled.div`
+            height: 300px;
+            width: 45%;
+
+            @media (max-width: 700px) {
+                width: 100%;
+            }
         `,
         CommentContainer: styled.li`
             display: flex;
@@ -291,27 +420,36 @@ const css = {
         Container: styled.div`
             max-width: 1200px;
             margin: 0 auto;
+
+            @media (max-width: 700px) {
+                width: 95%;
+            }
         `,
         ListContainer: styled.section`
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            gap: 10px;
+            padding: 20px 0 20px 20px;
             max-width: 1200px;
             background-color: white;
             border: 1px solid rgb(216, 216, 216);
             border-radius: 10px;
         `,
         ItemDetail: styled.li`
-            display: flex;
+            display: grid;
             justify-content: space-around;
             align-items: center;
             height: 70px;
             border-bottom: 1px solid rgb(216, 216, 216);
+            column-gap: 10px;
             ${props =>
                 props.$styleLast ??
                 `&:last-child {
                 display: flex;
                 border: none;
-                justify-content: right;`}}
+                justify-content: right;
+                gap: 15px;
+                padding-right: 15px;
+                `}}
         `,
     },
     SectionHeader: styled.div`
@@ -354,6 +492,13 @@ const css = {
         width: 100vw;
         z-index: 4;
     `,
+    Label: styled.label`
+        cursor: pointer;
+        width: ${props => props.$width};
+        margin-bottom: ${props => props.$marginBottom};
+        text-align: ${props => props.$textAlign};
+    `,
+
     LabelInput: styled.div`
         display: flex;
         justify-content: ${props => props.$justifyContent ?? 'space-evenly'};
@@ -390,7 +535,7 @@ const css = {
         FilesContainer: styled.div`
             display: flex;
             flex-direction: column;
-            width: 80%;
+            width: 75%;
         `,
     },
     TextArea: styled.textarea`
@@ -401,6 +546,11 @@ const css = {
         border-radius: 10px;
         padding: 10px;
         font-size: 18px;
+
+        @media (max-width: 700px) {
+            min-width: auto;
+            max-height: 120px;
+        }
     `,
     Profile: {
         SectionDetail: styled.div`
@@ -410,6 +560,10 @@ const css = {
             width: ${props => props.$sectionWidth};
             justify-content: center;
             align-items: center;
+
+            @media (max-width: 700px) {
+                width: 100%;
+            }
         `,
         ProfilePhotoContainer: styled.div`
             display: flex;
@@ -428,10 +582,23 @@ const css = {
             align-items: center;
             width: ${props => props.$detailWidth};
             margin-top: 20px;
+
+            @media (max-width: 700px) {
+                width: 100%;
+            }
         `,
         ProfileDetailSpan: styled.span`
             margin-left: 5px;
             margin-top: 2px;
+        `,
+        ContainerBtns: styled.div`
+            width: 250px;
+            display: flex;
+
+            @media (max-width: 700px) {
+                width: 67%;
+                padding-left: 15px;
+            }
         `,
     },
     Main: styled.main`
@@ -450,6 +617,11 @@ const css = {
         max-width: 600px;
         opacity: 1;
         z-index: 4;
+    `,
+    FormFile: styled.form`
+        @media (max-width: 700px) {
+            width: 33%;
+        }
     `,
     SectionWrapper: styled.div`
         display: flex;
@@ -512,6 +684,18 @@ const css = {
         padding-right: 10px;
         border: 1px solid rgb(216, 216, 216);
         border-radius: 8px;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none; // Yeah, yeah everybody write about it
+        }
+
+        ,
+        &:hover,
+        &:focus {
+            appearance: none;
+            -moz-appearance: textfield;
+        }
     `,
     SeparateLine: styled.span`
         background-color: rgb(204, 204, 204);
@@ -529,6 +713,7 @@ const css = {
     ItemListDetailStat: styled.div`
         display: flex;
         justify-content: start;
+        margin-top: 10px;
     `,
     CrossButton: styled.span`
         position: relative;

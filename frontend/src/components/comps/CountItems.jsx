@@ -1,7 +1,6 @@
 import css from '../../styles/styles';
 
+const { CountItems: CountItemsStyle } = css;
 export default function CountItems({ count }) {
-    const { CountItems: CountItemsStyle } = css;
-
     if (count) return <CountItemsStyle>{count} </CountItemsStyle>;
 }

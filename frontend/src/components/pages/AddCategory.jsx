@@ -5,46 +5,62 @@ import { Input, RadioInput } from '../comps/Input';
 import { Label } from '../comps/Label';
 import { host } from '../../settings';
 
+const { ModalContainer, Form, SectionHeader, LabelInput } = css;
+
 export default function AddCategory({ handleCloseModal, isOpen = false }) {
     const [category, setCategory] = useState('');
     const [parentCategory, setParentCategory] = useState('');
     const [existingCategories, setExistingCategories] = useState([]);
-    const { ModalContainer, Form, SectionHeader, LabelInput } = css;
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         async function fetchCategories() {
-            const request = await fetch(`${host}shop/categories`);
-            if (request.ok) {
-                const data = await request.json();
-                setExistingCategories(data);
+            try {
+                const request = await fetch(`${host}shop/categories`);
+                if (request.ok) {
+                    const data = await request.json();
+                    setExistingCategories(data);
+                } else {
+                    throw new Error('Failed to fetch categories');
+                }
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
             }
         }
         fetchCategories();
     }, []);
 
-    async function onClickApply(e) {
+    async function onSubmin(e) {
         e.preventDefault();
 
         const data = { name: category };
         if (parentCategory) {
             data['parent'] = parentCategory;
         }
+        try {
+            const formJson = JSON.stringify(data);
 
-        const formJson = JSON.stringify(data);
-
-        const request = await fetch(`${host}admin/add_category`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: formJson,
-        });
-        if (request.ok) {
-            setCategory('');
-            setParentCategory('');
-            handleCloseModal('');
+            const request = await fetch(`${host}admin/add_category`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: formJson,
+            });
+            if (request.ok) {
+                setCategory('');
+                setParentCategory('');
+                handleCloseModal('');
+            } else {
+                throw new Error('Failed to add category');
+            }
+        } catch (error) {
+            setError(error.message);
         }
     }
 
@@ -79,6 +95,8 @@ export default function AddCategory({ handleCloseModal, isOpen = false }) {
     );
     return (
         <ModalContainer style={{ display: `${isOpen ? 'flex' : 'none'}` }}>
+            {isLoading && <div>Loading...</div>}
+            {error && <div>{error}</div>}
             <Form style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                 <SectionHeader style={{ marginBottom: '30px' }}>
                     Add category
@@ -104,11 +122,7 @@ export default function AddCategory({ handleCloseModal, isOpen = false }) {
                 <Label width="20%" text="Parent category" />
                 <div style={{ width: '80%' }}>{categoyList}</div>
 
-                <OrangeButton
-                    onClick={onClickApply}
-                    text={'Apply'}
-                    width="30%"
-                />
+                <OrangeButton onClick={onSubmin} text={'Apply'} width="30%" />
             </Form>
         </ModalContainer>
     );

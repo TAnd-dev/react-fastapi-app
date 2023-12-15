@@ -12,9 +12,12 @@ import Purchase from './components/pages/Purchase.jsx';
 import AddProduct from './components/pages/AddProduct.jsx';
 import Admin from './components/pages/Admin.jsx';
 
+import GloabalStyle from './styles/global.js';
+
 export default function App() {
     return (
         <>
+            <GloabalStyle />
             <Header />
             <Routes>
                 <Route path="/" Component={ItemListPage}></Route>

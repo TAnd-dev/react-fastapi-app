@@ -5,9 +5,9 @@ import DeleteProduct from './DeleteProduct';
 import AddCategory from './AddCategory';
 import DeleteCategory from './DeleteCategory';
 
+const { Admin: AdminStyle, BlackOrangeLink } = css;
 export default function Admin() {
     const [action, setAction] = useState('');
-    const { Admin: AdminStyle, BlackOrangeLink } = css;
     function onClickAction(e) {
         setAction(e.target.id);
     }

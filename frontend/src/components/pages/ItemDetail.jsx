@@ -24,8 +24,17 @@ import { useCookies } from 'react-cookie';
 import { host } from '../../settings';
 import { isValidText } from '../../services/validators';
 
+const {
+    ItemDetail: ItemDetailStyles,
+    SectionHeader,
+    ModalContainer,
+    Form,
+    LabelInput,
+    Main,
+    SectionWrapper,
+} = css;
+
 function ImageSwiper({ photoList }) {
-    const { ItemDetail: ItemDetailStyles } = css;
     const swiperElRef = useRef(null);
     const swiperElRef1 = useRef(null);
     const photos = [];
@@ -88,7 +97,7 @@ function ImageSwiper({ photoList }) {
     });
 
     return (
-        <div style={{ height: '400px', width: '80%' }}>
+        <ItemDetailStyles.ItemImage>
             <swiper-container
                 style={{ height: '80%' }}
                 init="false"
@@ -107,12 +116,11 @@ function ImageSwiper({ photoList }) {
             >
                 {smallPhotos}
             </swiper-container>
-        </div>
+        </ItemDetailStyles.ItemImage>
     );
 }
 
 function ItemRating({ itemDetail, rateData, handleOpenModal, userData }) {
-    const { ItemDetail: ItemDetailStyles, SectionHeader } = css;
     return (
         <ItemDetailStyles.ItemSubDetail>
             <SectionHeader>
@@ -129,9 +137,9 @@ function ItemRating({ itemDetail, rateData, handleOpenModal, userData }) {
                     </span>
                 </Typography>
             </ItemDetailStyles.ItemRating>
-            <div style={{ height: '300px', width: '45%' }}>
+            <ItemDetailStyles.ReviewContainer>
                 <ReviewsBar data={rateData} />
-            </div>
+            </ItemDetailStyles.ReviewContainer>
             {userData.email ? (
                 <WhiteButton
                     onClick={() => handleOpenModal(true)}
@@ -151,7 +159,6 @@ function ItemRating({ itemDetail, rateData, handleOpenModal, userData }) {
 }
 
 function ItemReviews({ reviews, pageInfo, onChangePage }) {
-    const { ItemDetail: ItemDetailStyles, SectionHeader } = css;
     return (
         <ItemDetailStyles.ItemSubDetail>
             <SectionHeader>Reviews:</SectionHeader>
@@ -186,7 +193,6 @@ function ItemAddReview({
 }) {
     const [dataReview, setDataReview] = useState({ rate: 1, text: '' });
     const [error, setError] = useState(null);
-    const { SectionHeader, ModalContainer, Form, LabelInput } = css;
 
     async function handleFormSubmit(event) {
         event.preventDefault();
@@ -296,12 +302,7 @@ export default function ItemDetail() {
             items: [newReview, ...itemReviewsPage.items],
         });
     }
-    const {
-        ItemDetail: ItemDetailStyles,
-        SectionHeader,
-        Main,
-        SectionWrapper,
-    } = css;
+
     const reviews = [];
 
     useEffect(() => {
@@ -417,11 +418,11 @@ export default function ItemDetail() {
                     {comment.email}
                 </h3>
                 <ItemDetailStyles.CommentContainer>
-                    <h4>Rate:</h4>
+                    <h4 style={{ width: '23%' }}>Rate:</h4>
                     <Rating readOnly value={comment.rate} />
                 </ItemDetailStyles.CommentContainer>
                 <ItemDetailStyles.CommentContainer>
-                    <h4>Comment:</h4>
+                    <h4 style={{ width: '23%' }}>Comment:</h4>
                     {comment.text}
                 </ItemDetailStyles.CommentContainer>
                 <div
@@ -464,12 +465,12 @@ export default function ItemDetail() {
                                 ? `${itemDetail.description.slice(0, 450)}...`
                                 : itemDetail.description}
                         </p>
-                        <div style={{ alignSelf: 'start', marginTop: '-50px' }}>
+                        <ItemDetailStyles.ItemStatContainer>
                             <ItemStat
                                 countReviews={itemDetail.count_reviews}
                                 avgRating={itemDetail.avg_rate}
                             />
-                        </div>
+                        </ItemDetailStyles.ItemStatContainer>
                         <ItemDetailStyles.ItemDetailBuy>
                             <h2 style={{ marginRight: '20px' }}>
                                 {itemDetail.price}$

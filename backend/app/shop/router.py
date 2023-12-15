@@ -37,8 +37,8 @@ async def get_categories() -> list[SCategories]:
 @router.get('/category/{category_id}')
 async def get_items_by_category(
         category_id: int, sort: SortItems = Depends()
-) -> list[SItems]:
-    return await ShopService.find_all_items(sort, category_id)
+) -> Page[SItems]:
+    return paginate(await ShopService.find_all_items(sort, category_id))
 
 
 @router.get('/item/{item_id}/reviews')

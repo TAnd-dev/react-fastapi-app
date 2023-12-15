@@ -1,8 +1,6 @@
-import SeparateLine from '../../comps/Line';
-
 import css from '../../../styles/styles';
 
-const { Footer: FooterStyles } = css;
+const { Footer: FooterStyles, SeparateLine } = css;
 
 function FooterMenuGroup({ title, links }) {
     const liLinks = [];
@@ -67,7 +65,6 @@ export default function Footer() {
     ];
     return (
         <FooterStyles.Footer>
-            <FooterMenuGroup title="Company" links={companyLinks} />
             <FooterMenuGroup title="Company" links={companyLinks} />
             <FooterMenuGroup title="Company" links={companyLinks} />
             <FooterMenuGroup title="Company" links={companyLinks} />
