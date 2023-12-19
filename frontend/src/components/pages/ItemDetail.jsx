@@ -89,7 +89,7 @@ function ImageSwiper({ photoList }) {
         smallPhotos.push(
             <swiper-slide style={{ textAlign: 'center' }} key={photo.id}>
                 <ItemDetailStyles.ItemDetailImage
-                    src={`${host}${smallPhoto}`}
+                    src={`${host}${photoName}`}
                     alt={photo.descritption}
                 />
             </swiper-slide>

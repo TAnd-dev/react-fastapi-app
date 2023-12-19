@@ -159,9 +159,7 @@ function HeaderNav() {
     const [cookies, , removeCookies] = useCookies();
     const userData = useSelector(state => state.userData.userData);
     const dispatch = useDispatch();
-    const photoName = userData.photo && userData.photo.split('/users/')[1];
-    const photo =
-        photoName && userData.photo.replace(photoName, 'small_' + photoName);
+    const photo = userData.photo && userData.photo.split('/users/')[1];
 
     useEffect(() => {
         const fetchUserData = async () => {
