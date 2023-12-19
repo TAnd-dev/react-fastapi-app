@@ -55,9 +55,9 @@ class BaseService:
         try:
             async with async_session_maker() as session:
                 query = insert(cls.model).values(**values).returning(cls.model)
-                result_id = await session.execute(query)
+                result = await session.execute(query)
                 await session.commit()
-                return result_id.scalars().one_or_none()
+                return result.scalars().one_or_none()
 
         except (SQLAlchemyError, Exception) as e:
             msg = 'Database' if isinstance(e, SQLAlchemyError) else 'Unknown'

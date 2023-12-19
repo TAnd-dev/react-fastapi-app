@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Response, UploadFile
 
 from app.exceptions import (IncorrectPasswordOrEmailException,
-                            PasswordMissmatchException,
-                            UserAlreadyExistsException)
+                            PasswordMissmatchException
+                            )
 from app.image.services import ImageService
 from app.tasks.tasks import process_pic
 from app.users.auth import (authenticate_user, create_access_token,
