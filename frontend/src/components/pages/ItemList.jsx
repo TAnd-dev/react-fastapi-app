@@ -84,7 +84,7 @@ function Sidebar() {
                         checked={typeSort === 'asc_price'}
                         onHandle={handleSortChange}
                     />
-                    <Label htmlFor="cheap" text={'Cheap at first'} />
+                    <Label htmlFor="cheap" text={'Cheap first'} />
 
                     <RadioInput
                         id="expensive"
@@ -93,7 +93,7 @@ function Sidebar() {
                         checked={typeSort === 'desc_price'}
                         onHandle={handleSortChange}
                     />
-                    <Label htmlFor="expensive" text={'Expensive at first'} />
+                    <Label htmlFor="expensive" text={'Expensive first'} />
 
                     <RadioInput
                         id="popular"
@@ -102,7 +102,7 @@ function Sidebar() {
                         checked={typeSort === 'popular'}
                         onHandle={handleSortChange}
                     />
-                    <Label htmlFor="popular" text={'Popular at first'} />
+                    <Label htmlFor="popular" text={'Popular first'} />
 
                     <RadioInput
                         id="best"
@@ -111,7 +111,7 @@ function Sidebar() {
                         checked={typeSort === 'best'}
                         onHandle={handleSortChange}
                     />
-                    <Label htmlFor="best" text={'Best grade at first'} />
+                    <Label htmlFor="best" text={'Best grade first'} />
                 </ItemListStyles.TypeSort>
                 <OrangeButton text="Apply" />
             </Form>
