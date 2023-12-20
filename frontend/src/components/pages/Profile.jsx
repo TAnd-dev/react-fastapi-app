@@ -111,7 +111,7 @@ export default function Profile() {
             second_name: profileData.second_name,
             number_phone: profileData.number_phone,
         });
-        const response = await fetch(`${host}user/profile`, {
+        const response = await fetch(`http://${host}user/profile`, {
             method: 'PATCH',
             credentials: 'include',
             headers: {
@@ -133,7 +133,7 @@ export default function Profile() {
         const formData = new FormData();
         formData.append('file', e.target.files[0]);
 
-        fetch(`${host}user/upload_photo`, {
+        fetch(`http://${host}user/upload_photo`, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -164,7 +164,7 @@ export default function Profile() {
                 <ProfileStyles.SectionDetail $sectionWidth="40%">
                     <ProfileStyles.ProfilePhotoContainer>
                         <img
-                            src={`${host}${userData.photo}`}
+                            src={`http://${host}${userData.photo}`}
                             alt="Profile"
                             style={{ height: '250px' }}
                         />

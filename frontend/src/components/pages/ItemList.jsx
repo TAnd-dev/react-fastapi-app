@@ -139,7 +139,7 @@ function ItemList() {
             searchTextParam += `${type}=${param}&`;
         });
         fetch(
-            `${host}shop/${
+            `http://${host}shop/${
                 categroyId ? `category/${categroyId}` : ''
             }?${searchTextParam}size=15`
         )
@@ -161,7 +161,7 @@ function ItemList() {
 
         itemsPage.items.forEach(async item => {
             const request = await fetch(
-                `${host}cart/item_in_cart?item_id=${item.id}`,
+                `http://${host}cart/item_in_cart?item_id=${item.id}`,
                 {
                     method: 'GET',
                     credentials: 'include',
@@ -186,7 +186,7 @@ function ItemList() {
 
         itemsPage.items.forEach(async item => {
             const request = await fetch(
-                `${host}favorite/item_in_favorite?item_id=${item.id}`,
+                `http://${host}favorite/item_in_favorite?item_id=${item.id}`,
                 {
                     method: 'GET',
                     credentials: 'include',
@@ -276,7 +276,7 @@ function ItemListDetail({
             ]);
             return;
         }
-        await fetch(`${host}cart/add_item`, {
+        await fetch(`http://${host}cart/add_item`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -305,7 +305,7 @@ function ItemListDetail({
         }
 
         if (isItemInFavorite && userData.email) {
-            await fetch(`${host}favorite/remove_item`, {
+            await fetch(`http://${host}favorite/remove_item`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -330,7 +330,7 @@ function ItemListDetail({
             return;
         }
 
-        await fetch(`${host}favorite/add_item`, {
+        await fetch(`http://${host}favorite/add_item`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -351,7 +351,7 @@ function ItemListDetail({
             <ItemListStyles.ItemListDetailLeft>
                 <Link to={`/item/${itemDetail.id}`} relative="path">
                     <ItemListStyles.ItemListDetailImg
-                        src={`${host}${itemDetail.images[0].file_path}`}
+                        src={`http://${host}${itemDetail.images[0].file_path}`}
                         alt="item"
                     />
                 </Link>

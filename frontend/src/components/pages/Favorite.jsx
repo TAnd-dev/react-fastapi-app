@@ -20,7 +20,7 @@ export default function Favorite() {
     async function deleteItem(e) {
         const deleteId = +e.target.id;
         if (userData.email) {
-            await fetch(`${host}favorite/remove_item`, {
+            await fetch(`http://${host}favorite/remove_item`, {
                 method: 'DELETE',
                 credentials: 'include',
                 headers: {
@@ -43,7 +43,7 @@ export default function Favorite() {
 
     useEffect(() => {
         async function fetchData() {
-            const request = await fetch(`${host}favorite`, {
+            const request = await fetch(`http://${host}favorite`, {
                 method: 'GET',
                 credentials: 'include',
             });

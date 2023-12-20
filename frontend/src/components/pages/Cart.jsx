@@ -143,7 +143,7 @@ export default function Cart() {
     async function deleteItem(e) {
         const deleteId = +e.target.id;
         if (userData.email) {
-            await fetch(`${host}cart/remove_item`, {
+            await fetch(`http://${host}cart/remove_item`, {
                 method: 'DELETE',
                 credentials: 'include',
                 headers: {
@@ -181,7 +181,7 @@ export default function Cart() {
         setItems(newListItem);
         if (userData.email) {
             try {
-                await fetch(`${host}cart/set_count`, {
+                await fetch(`http://${host}cart/set_count`, {
                     method: 'PATCH',
                     credentials: 'include',
                     headers: {
@@ -212,7 +212,7 @@ export default function Cart() {
                 price: item.price * item.count,
             });
 
-            await fetch(`${host}purchase/add_item`, {
+            await fetch(`http://${host}purchase/add_item`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -224,7 +224,7 @@ export default function Cart() {
 
         if (userData.email) {
             items.map(async item => {
-                await fetch(`${host}cart/remove_item`, {
+                await fetch(`http://${host}cart/remove_item`, {
                     method: 'DELETE',
                     credentials: 'include',
                     headers: {
@@ -242,7 +242,7 @@ export default function Cart() {
 
     useEffect(() => {
         async function fetchData() {
-            const request = await fetch(`${host}cart`, {
+            const request = await fetch(`http://${host}cart`, {
                 method: 'GET',
                 credentials: 'include',
             });

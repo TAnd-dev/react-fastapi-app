@@ -15,7 +15,7 @@ export default function DeleteProduct({ handleCloseModal, isOpen = false }) {
 
         const formData = new FormData();
         formData.append('item_id', idProuct);
-        const request = await fetch(`${host}admin/delete_item`, {
+        const request = await fetch(`http://${host}admin/delete_item`, {
             method: 'DELETE',
             credentials: 'include',
             headers: {

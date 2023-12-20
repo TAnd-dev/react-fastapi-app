@@ -112,7 +112,7 @@ function HeaderSearch() {
     async function getBriefItems(searchValue) {
         if (searchValue) {
             const request = await fetch(
-                `${host}shop/brief_items?search_text=${searchValue}`
+                `http://${host}shop/brief_items?search_text=${searchValue}`
             );
             if (request.ok) {
                 const data = await request.json();
@@ -164,7 +164,7 @@ function HeaderNav() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`${host}user/profile`, {
+                const response = await fetch(`http://${host}user/profile`, {
                     method: 'GET',
                     credentials: 'include',
                 });
@@ -217,7 +217,7 @@ function HeaderNav() {
     }, [userData, cookies.cart, cookies.favorite]);
 
     async function clickLogout() {
-        await fetch(`${host}user/logout`, {
+        await fetch(`http://${host}user/logout`, {
             method: 'POST',
             credentials: 'include',
             header: {
@@ -308,7 +308,7 @@ function HeaderNavBtn({ link, linkText, icon, count }) {
                                 height: '25px',
                                 borderRadius: '50%',
                             }}
-                            src={`${host}${icon}`}
+                            src={`http://${host}${icon}`}
                             alt="Profile"
                         />
                     </span>

@@ -36,7 +36,7 @@ function Login() {
         }
 
         const formJson = JSON.stringify(userData);
-        const request = await fetch(`${host}user/auth/login`, {
+        const request = await fetch(`http://${host}user/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ function Reg() {
             return;
         }
         const formJson = JSON.stringify(userRegData);
-        const request = await fetch(`${host}user/auth/register`, {
+        const request = await fetch(`http://${host}user/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
