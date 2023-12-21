@@ -25,7 +25,7 @@ async def register_user(response: Response, user_data: SUserReg):
         email=user_data.email, hash_password=hashed_password
     )
     access_token = create_access_token({'sub': str(user_id)})
-    response.set_cookie('auth_token', access_token)
+    response.set_cookie('auth_token', access_token, httponly=True)
 
 
 @router.post('/auth/login')
@@ -34,7 +34,7 @@ async def login_user(response: Response, user_data: SUserAuth) -> dict:
     if not user:
         raise IncorrectPasswordOrEmailException()
     access_token = create_access_token({'sub': str(user.id)})
-    response.set_cookie('auth_token', access_token)  # , httponly=True)
+    response.set_cookie('auth_token', access_token, httponly=True)
     return {'auth_token': access_token}
 
 
