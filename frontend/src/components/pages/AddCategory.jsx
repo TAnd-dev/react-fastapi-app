@@ -17,7 +17,7 @@ export default function AddCategory({ handleCloseModal, isOpen = false }) {
     useEffect(() => {
         async function fetchCategories() {
             try {
-                const request = await fetch(`http://${host}shop/categories`);
+                const request = await fetch(`https://${host}shop/categories`);
                 if (request.ok) {
                     const data = await request.json();
                     setExistingCategories(data);
@@ -43,7 +43,7 @@ export default function AddCategory({ handleCloseModal, isOpen = false }) {
         try {
             const formJson = JSON.stringify(data);
 
-            const request = await fetch(`http://${host}admin/add_category`, {
+            const request = await fetch(`https://${host}admin/add_category`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

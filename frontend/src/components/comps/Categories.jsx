@@ -65,7 +65,7 @@ export default function Categories() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const request = await fetch(`http://${host}shop/categories`);
+                const request = await fetch(`https://${host}shop/categories`);
                 if (request.ok) {
                     const data = await request.json();
                     setCategories(data);
