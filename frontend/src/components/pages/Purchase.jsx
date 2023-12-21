@@ -16,7 +16,7 @@ export default function Purchase() {
             return;
         }
 
-        fetch(`http://${host}purchase`, {
+        fetch(`https://${host}purchase`, {
             method: 'GET',
             credentials: 'include',
         })

@@ -15,7 +15,7 @@ export default function DeleteCategory({ handleCloseModal, isOpen = false }) {
 
         const formData = new FormData();
         formData.append('category_id', idCategory);
-        const request = await fetch(`http://${host}admin/delete_category`, {
+        const request = await fetch(`https://${host}admin/delete_category`, {
             method: 'DELETE',
             credentials: 'include',
             headers: {

@@ -30,7 +30,7 @@ export default function AddProduct({ handleCloseModal, isOpen = false }) {
     useEffect(() => {
         async function fetchCategories() {
             try {
-                const request = await fetch(`http://${host}shop/categories`);
+                const request = await fetch(`https://${host}shop/categories`);
                 if (request.ok) {
                     const data = await request.json();
                     setCategories(data);
@@ -76,7 +76,7 @@ export default function AddProduct({ handleCloseModal, isOpen = false }) {
         formData.append('price', addItem.price);
         formData.append('categories', addItem.categories);
 
-        const request = await fetch(`http://${host}admin/add_item`, {
+        const request = await fetch(`https://${host}admin/add_item`, {
             method: 'POST',
             credentials: 'include',
             headers: {

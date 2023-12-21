@@ -81,7 +81,7 @@ function ImageSwiper({ photoList }) {
         photos.push(
             <swiper-slide style={{ textAlign: 'center' }} key={photo.id}>
                 <ItemDetailStyles.ItemDetailImage
-                    src={`http://${host}${photo.file_path}`}
+                    src={`https://${host}${photo.file_path}`}
                     alt={photo.descritption}
                 />
             </swiper-slide>
@@ -89,7 +89,7 @@ function ImageSwiper({ photoList }) {
         smallPhotos.push(
             <swiper-slide style={{ textAlign: 'center' }} key={photo.id}>
                 <ItemDetailStyles.ItemDetailImage
-                    src={`http://${host}${photoName}`}
+                    src={`https://${host}${photoName}`}
                     alt={photo.descritption}
                 />
             </swiper-slide>
@@ -202,7 +202,7 @@ function ItemAddReview({
         }
         const formJson = JSON.stringify(dataReview);
         const request = await fetch(
-            `http://${host}shop/item/${itemId}/add_review`,
+            `https://${host}shop/item/${itemId}/add_review`,
             {
                 method: 'POST',
                 headers: {
@@ -310,7 +310,7 @@ export default function ItemDetail() {
 
     useEffect(() => {
         async function fetchItem() {
-            const request = await fetch(`http://${host}shop/item/${itemId}`);
+            const request = await fetch(`https://${host}shop/item/${itemId}`);
             if (!request.ok) {
                 return;
             }
@@ -330,7 +330,7 @@ export default function ItemDetail() {
     useEffect(() => {
         async function getData() {
             const request = await fetch(
-                `http://${host}cart/item_in_cart?item_id=${itemId}`,
+                `https://${host}cart/item_in_cart?item_id=${itemId}`,
                 {
                     method: 'GET',
                     credentials: 'include',
@@ -355,7 +355,7 @@ export default function ItemDetail() {
     useEffect(() => {
         if (!isLoaded) return;
         fetch(
-            `http://${host}shop/item/${itemId}/reviews?page=${itemReviewsPage.page}&size=20`
+            `https://${host}shop/item/${itemId}/reviews?page=${itemReviewsPage.page}&size=20`
         )
             .then(res => res.json())
             .then(result => {
@@ -374,7 +374,7 @@ export default function ItemDetail() {
             };
 
             const request = await fetch(
-                `http://${host}shop/item/${itemId}/count_rate`
+                `https://${host}shop/item/${itemId}/count_rate`
             );
             if (!request.ok) {
                 return;
@@ -405,7 +405,7 @@ export default function ItemDetail() {
             return;
         }
 
-        await fetch(`http://${host}cart/add_item`, {
+        await fetch(`https://${host}cart/add_item`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
