@@ -36,12 +36,7 @@ sentry_sdk.init(
     profiles_sample_rate=1.0,
 )
 
-origins = [
-    'http://localhost:3000',
-    'http://localhost:2437',
-    'http://127.0.0.1:2437',
-    'http://127.0.0.1:3000',
-]
+origins = settings.ORIGIN_HOST.split(',')
 
 app.add_middleware(
     CORSMiddleware,
